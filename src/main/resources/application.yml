@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  thymeleaf:
+    cache: false
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        hbm2ddl:
+          auto: ${DDL_AUTO}
+        show_sql: true
+
+logging:
+  level:
+    sql: info
