@@ -12,20 +12,20 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Authority extends BaseTimeEntity {
+public class AppIntroductionImage extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "board_id")
+    private Board board;
 
-    private String authority;
+    private String url;
 
-    public Authority(User user, String authority) {
-        this.user = user;
-        this.authority = authority;
+    public AppIntroductionImage(Board board, String url) {
+        this.board = board;
+        this.url = url;
     }
 }
