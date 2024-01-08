@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers("/static/**").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/test/**").permitAll()
                         .anyRequest().authenticated());
 
         return httpSecurity.build();

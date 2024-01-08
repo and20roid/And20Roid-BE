@@ -5,8 +5,11 @@ import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.AuthorityRepository;
 import com.and20roid.backend.repository.UserRepository;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -30,9 +33,16 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         List<Authority> authorities = authorityRepository.findAllByUser(user);
 
-        log.info("authorities: [{}]", authorities.toString());
+        return createUser(user, authorities);
+    }
 
-        return null;
+    private org.springframework.security.core.userdetails.User createUser(User user, List<Authority> authorities) {
+        List<GrantedAuthority> grantedAuthorities = authorities.stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                .collect(Collectors.toList());
 
+        return new org.springframework.security.core.userdetails.User(user.getToken(),
+                "",
+                grantedAuthorities);
     }
 }
