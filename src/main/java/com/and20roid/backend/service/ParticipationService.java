@@ -19,11 +19,11 @@ public class ParticipationService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    public void createParticipation(Long boardId, String uid) {
+    public void createParticipation(Long boardId, Long userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
-        User user = userRepository.findByUid(uid)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
         if (participationRepository.existsByBoardIdAndUserId(boardId, user.getId())) {

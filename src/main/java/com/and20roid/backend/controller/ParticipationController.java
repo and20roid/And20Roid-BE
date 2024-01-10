@@ -22,8 +22,9 @@ public class ParticipationController {
     @PostMapping("")
     public ResponseEntity createParticipation(@RequestBody CreateParticipationRequest request) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
 
-        participationService.createParticipation(request.getBoardId(), userDetails.getUsername());
+        participationService.createParticipation(request.getBoardId(), userId);
 
         return new ResponseEntity("성공", HttpStatus.OK);
     }

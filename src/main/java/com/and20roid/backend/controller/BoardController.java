@@ -39,8 +39,9 @@ public class BoardController {
             throws FileUploadException {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
 
-        boardService.createBoard(createBoardRequest, thumbnailFile, multipartFiles, userDetails.getUsername());
+        boardService.createBoard(createBoardRequest, thumbnailFile, multipartFiles, userId);
 
         return ResponseEntity.ok("success");
     }

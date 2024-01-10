@@ -32,11 +32,11 @@ public class BoardService {
     private final AppIntroductionImageRepository appIntroductionImageRepository;
     private final AwsS3Service awsS3Service;
 
-    public void createBoard(CreateBoardRequest createBoardRequest, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles, String uid)
+    public void createBoard(CreateBoardRequest createBoardRequest, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles, long userId)
             throws FileUploadException {
         String thumbnailUrl = awsS3Service.uploadFile(thumbnailFile);
 
-        User user = userRepository.findByUid(uid)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
         Board savedBoard = boardRepository.save(new Board(createBoardRequest, thumbnailUrl, user));
