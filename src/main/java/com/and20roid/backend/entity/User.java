@@ -16,11 +16,11 @@ public class User extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String token;
+    private String uid;
     private String nickname;
 
-    public User(String token, String nickname) {
-        this.token = token;
+    public User(String uid, String nickname) {
+        this.uid = uid;
         this.nickname = nickname;
     }
 }

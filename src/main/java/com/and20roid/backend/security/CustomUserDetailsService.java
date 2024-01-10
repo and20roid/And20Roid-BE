@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String uid) throws UsernameNotFoundException {
-        User user = userRepository.findByToken(uid)
+        User user = userRepository.findByUid(uid)
                 .orElseThrow(() -> new UsernameNotFoundException(uid + " -> 데이터베이스에 존재하지 않습니다."));
 
         List<Authority> authorities = authorityRepository.findAllByUser(user);
@@ -41,7 +41,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
                 .collect(Collectors.toList());
 
-        return new org.springframework.security.core.userdetails.User(user.getToken(),
+        return new org.springframework.security.core.userdetails.User(user.getUid(),
                 "",
                 grantedAuthorities);
     }

@@ -36,7 +36,7 @@ public class BoardService {
             throws FileUploadException {
         String thumbnailUrl = awsS3Service.uploadFile(thumbnailFile);
 
-        User user = userRepository.findByToken(uid)
+        User user = userRepository.findByUid(uid)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
         Board savedBoard = boardRepository.save(new Board(createBoardRequest, thumbnailUrl, user));
