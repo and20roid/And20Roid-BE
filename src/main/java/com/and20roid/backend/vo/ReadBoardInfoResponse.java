@@ -14,10 +14,14 @@ public class ReadBoardInfoResponse {
     private String content;             // 내용
     private List<String> imageUrls;     // 이미지 링크
     private int participantNum;         // 참여자 수
+    private String appTestLink;     // 앱 테스트 링크
+    private String webTestLink;     // 웹 테스트 링크
 
     public ReadBoardInfoResponse(Board board, List<String> imageUrls) {
         this.content = board.getContent();
         this.imageUrls = imageUrls;
         this.participantNum = board.getParticipantNum();
+        this.appTestLink = board.getAppTestLink();
+        this.webTestLink = board.getWebTestLink();
     }
 }
