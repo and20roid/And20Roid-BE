@@ -1,5 +1,7 @@
 package com.and20roid.backend.service;
 
+import com.and20roid.backend.common.exception.CustomException;
+import com.and20roid.backend.common.response.CommonCode;
 import com.and20roid.backend.entity.Authority;
 import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.AuthorityRepository;
@@ -18,10 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
 
-    public String signup(String token, String nickname) {
-        log.info("signup by token[{}], nickname[{}]", token, nickname);
+    public String signup(String uid, String nickname) {
+        log.info("signup by uid[{}], nickname[{}]", uid, nickname);
 
-        User savedUser = userRepository.save(new User(token, nickname));
+        if (userRepository.existsByUid(uid)) {
+            throw new CustomException(CommonCode.ALREADY_EXIST_USER);
+        }
+
+        User savedUser = userRepository.save(new User(uid, nickname));
         authorityRepository.save(new Authority(savedUser, ROLE_USER));
 
         return "성공";

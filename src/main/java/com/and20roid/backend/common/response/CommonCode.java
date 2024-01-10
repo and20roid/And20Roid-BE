@@ -16,6 +16,7 @@ public enum CommonCode {
 
     //-1000: User
     NONEXISTENT_USER(400, -1000, "존재하지 않는 유저입니다."),
+    ALREADY_EXIST_USER(400, -1001, "이미 존재하는 유저입니다."),
 
     //-2000: Board
     NONEXISTENT_BOARD(400, -2000, "존재하지 않는 게시글입니다."),
@@ -23,8 +24,10 @@ public enum CommonCode {
 
     //-3000: MultipartFile
     WRONG_FILE_FORMAT(400, -3000, "잘못된 형식의 파일입니다."),
-    FILE_UPLOAD_FAIL(400, -3001, "파일 업로드에 실패했습니다")
-    ;
+    FILE_UPLOAD_FAIL(400, -3001, "파일 업로드에 실패했습니다"),
+
+    //-4000: participation
+    ALREADY_PARTICIPATE_BOARD(400, -4000, "이미 참여한 테스트입니다.");
 
 
     private int status;
