@@ -30,6 +30,8 @@ public class ReadBoardsResponse {
         private String thumbnailUrl;   // 썸네일 URL
         private String nickname;        // 작성자
         private String createdDate;     // 생성일
+        private Long views;             // 조회수
+        private Long likes;             // 좋아요수
 
         public ReadBoardResponse(Board board) {
             this.id = board.getId();
@@ -40,6 +42,8 @@ public class ReadBoardsResponse {
             this.thumbnailUrl = board.getThumbnailUrl();
             this.nickname = board.getUser().getNickname();
             this.createdDate = board.getCreatedDate().toString();
+            this.views = board.getViews();
+            this.likes = board.getLikes();
         }
     }
 

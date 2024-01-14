@@ -21,6 +21,7 @@ public enum CommonCode {
     //-2000: Board
     NONEXISTENT_BOARD(400, -2000, "존재하지 않는 게시글입니다."),
     ZERO_INTRODUCTION_IMAGES(400, -2001, "소개 이미지가 존재하지 않습니다."),
+    TOO_MANY_IMAGES(400, -2002, "이미지는 최대 3개까지만 첨부할 수 있습니다."),
 
     //-3000: MultipartFile
     WRONG_FILE_FORMAT(400, -3000, "잘못된 형식의 파일입니다."),

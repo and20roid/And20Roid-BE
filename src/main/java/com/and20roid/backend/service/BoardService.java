@@ -4,13 +4,16 @@ import com.and20roid.backend.common.exception.CustomException;
 import com.and20roid.backend.common.response.CommonCode;
 import com.and20roid.backend.entity.AppIntroductionImage;
 import com.and20roid.backend.entity.Board;
+import com.and20roid.backend.entity.BoardLikeStatus;
 import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.AppIntroductionImageRepository;
+import com.and20roid.backend.repository.BoardLikeStatusRepository;
 import com.and20roid.backend.repository.BoardRepository;
 import com.and20roid.backend.repository.UserRepository;
 import com.and20roid.backend.vo.CreateBoardRequest;
 import com.and20roid.backend.vo.ReadBoardInfoResponse;
 import com.and20roid.backend.vo.ReadBoardsResponse;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +33,16 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final AppIntroductionImageRepository appIntroductionImageRepository;
+    private final BoardLikeStatusRepository boardLikeStatusRepository;
     private final AwsS3Service awsS3Service;
 
     public void createBoard(CreateBoardRequest createBoardRequest, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles, long userId)
             throws FileUploadException {
+
+        if (multipartFiles.size() > 3) {
+            throw new CustomException(CommonCode.TOO_MANY_IMAGES);
+        }
+
         String thumbnailUrl = awsS3Service.uploadFile(thumbnailFile);
 
         User user = userRepository.findById(userId)
@@ -84,6 +93,33 @@ public class BoardService {
                 .map(AppIntroductionImage::getUrl)
                 .toList();
 
-        return new ReadBoardInfoResponse(board, imageUrls);
+        Board updatedBoard = boardRepository.save(board.addViews());
+
+        return new ReadBoardInfoResponse(updatedBoard, imageUrls);
+    }
+
+    @Transactional
+    public String updateBoardLikes(Long boardId, long userId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
+
+        String msg = "";
+
+        if (boardLikeStatusRepository.existsByBoardIdAndUserId(boardId, userId)) {
+            boardLikeStatusRepository.deleteByBoardIdAndUserId(boardId, userId);
+            board.cancelLikes();
+            boardRepository.save(board);
+            msg = "좋아요 취소";
+        } else {
+            boardLikeStatusRepository.save(new BoardLikeStatus(user, board));
+            board.addLikes();
+            boardRepository.save(board);
+            msg = "좋아요";
+        }
+
+        return msg;
     }
 }

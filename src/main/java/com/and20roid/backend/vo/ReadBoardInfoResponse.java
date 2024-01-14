@@ -16,6 +16,8 @@ public class ReadBoardInfoResponse {
     private int participantNum;         // 참여자 수
     private String appTestLink;     // 앱 테스트 링크
     private String webTestLink;     // 웹 테스트 링크
+    private Long views;             // 조회수
+    private Long likes;             // 좋아요 수
 
     public ReadBoardInfoResponse(Board board, List<String> imageUrls) {
         this.content = board.getContent();
@@ -23,5 +25,7 @@ public class ReadBoardInfoResponse {
         this.participantNum = board.getParticipantNum();
         this.appTestLink = board.getAppTestLink();
         this.webTestLink = board.getWebTestLink();
+        this.views = board.getViews();
+        this.likes = board.getLikes();
     }
 }

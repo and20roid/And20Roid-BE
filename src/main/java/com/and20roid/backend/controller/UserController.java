@@ -19,7 +19,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity signup(@RequestBody SignupRequest request) {
-        return new ResponseEntity(userService.signup(request.getToken(), request.getNickname()), HttpStatus.OK);
+        return new ResponseEntity(userService.signup(request.getUid(), request.getNickname()), HttpStatus.OK);
     }
 
 

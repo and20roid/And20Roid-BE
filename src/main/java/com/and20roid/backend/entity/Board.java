@@ -29,6 +29,8 @@ public class Board extends BaseTimeEntity {
     private String thumbnailUrl;   // 썸네일 URL
     private String appTestLink;     // 앱 테스트 링크
     private String webTestLink;     // 웹 테스트 링크
+    private Long views;             // 조회수
+    private Long likes;             // 좋아요 개수
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -44,5 +46,22 @@ public class Board extends BaseTimeEntity {
         this.appTestLink = createBoardRequest.getAppTestLink();
         this.webTestLink = createBoardRequest.getWebTestLink();
         this.user = user;
+        this.views = 0L;
+        this.likes = 0L;
+    }
+
+    public Board addViews() {
+        this.views += 1;
+        return this;
+    }
+
+    public Board addLikes() {
+        this.likes += 1;
+        return this;
+    }
+
+    public Board cancelLikes() {
+        this.likes -= 1;
+        return this;
     }
 }

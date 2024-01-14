@@ -1,5 +1,7 @@
 package com.and20roid.backend.controller;
 
+import static com.and20roid.backend.common.constant.Constant.DEFAULT_ONE_PAGE_SIZE;
+
 import com.and20roid.backend.service.BoardService;
 import com.and20roid.backend.vo.CreateBoardRequest;
 import com.and20roid.backend.vo.ReadBoardInfoResponse;
@@ -24,8 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @RequestMapping("/boards")
 public class BoardController {
-
-    private static final int DEFAULT_ONE_PAGE_SIZE = 10;
 
     private final BoardService boardService;
 
@@ -60,5 +60,19 @@ public class BoardController {
     @GetMapping("/{boardId}")
     public ResponseEntity<ReadBoardInfoResponse> readBoard(@PathVariable Long boardId) {
         return new ResponseEntity<>(boardService.readBoard(boardId), HttpStatus.OK);
+    }
+
+    /**
+     * 모집글 좋아요
+     */
+    @PostMapping("/{boardId}/likes")
+    public ResponseEntity updateBoardLikes(@PathVariable Long boardId) {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        String msg = boardService.updateBoardLikes(boardId, userId);
+
+        return ResponseEntity.ok(msg);
     }
 }

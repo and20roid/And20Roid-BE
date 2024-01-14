@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignupRequest {
-    private String token;       // firebase token
+    private String uid;       // firebase token
     private String nickname;    // 닉네임
 }
