@@ -10,7 +10,7 @@ public interface ParticipationRepository extends JpaRepository<ParticipationStat
 
     boolean existsByBoardIdAndUserId(Long boardId, Long userId);
 
-    @Query(value = "SELECT user_id, nickname, completedTestCount, " +
+    @Query(value = "SELECT user_id as userId, nickname, completedTestCount, " +
             "RANK() OVER (ORDER BY completedTestCount DESC) AS `rank` " +
             "FROM ( " +
             "   SELECT p.user_id, u.nickname, COUNT(*) AS completedTestCount " +

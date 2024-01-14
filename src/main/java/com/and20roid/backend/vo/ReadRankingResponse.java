@@ -13,7 +13,8 @@ public class ReadRankingResponse {
 
     public ReadRankingResponse(List<ReadRankQuery> readRankQueries) {
         this.rankInfos = readRankQueries.stream()
-                .map(readRankQuery -> new RankInfo(readRankQuery.getRank(), readRankQuery.getNickname(),
+                .map(readRankQuery -> new RankInfo(readRankQuery.getUserId(),
+                        readRankQuery.getRank(), readRankQuery.getNickname(),
                         readRankQuery.getCompletedTestCount()))
                 .collect(Collectors.toList());
     }
@@ -22,6 +23,7 @@ public class ReadRankingResponse {
     @NoArgsConstructor
     @AllArgsConstructor
     static class RankInfo{
+        private long userId;
         private int rank;
         private String nickname;
         private int completedTestCount;
