@@ -1,5 +1,7 @@
 package com.and20roid.backend.service;
 
+import static com.and20roid.backend.common.constant.Constant.BOARD_PARTICIPATION_PENDING;
+
 import com.and20roid.backend.common.exception.CustomException;
 import com.and20roid.backend.common.response.CommonCode;
 import com.and20roid.backend.entity.Board;
@@ -19,7 +21,7 @@ public class ParticipationService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
-    public void createParticipation(Long boardId, Long userId) {
+    public void createParticipation(Long boardId, String email, Long userId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -30,7 +32,6 @@ public class ParticipationService {
             throw new CustomException(CommonCode.ALREADY_PARTICIPATE_BOARD);
         }
 
-
-        participationRepository.save(new ParticipationStatus(user, board, false));
+        participationRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
     }
 }

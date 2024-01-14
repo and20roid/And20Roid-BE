@@ -24,10 +24,8 @@ public class ParticipationController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long userId = Long.parseLong(userDetails.getUsername());
 
-        participationService.createParticipation(request.getBoardId(), userId);
+        participationService.createParticipation(request.getBoardId(), request.getEmail(), userId);
 
         return new ResponseEntity("성공", HttpStatus.OK);
     }
-
-
 }

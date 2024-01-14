@@ -27,11 +27,13 @@ public class ParticipationStatus {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    private boolean finished;   // 완료 여부
+    private String status;      // 상태 / "대기중", "테스트 진행 중", "테스트 완료"
+    private String email;       // 이메일
 
-    public ParticipationStatus(User user, Board board, boolean finished) {
+    public ParticipationStatus(User user, Board board, String status, String email) {
         this.user = user;
         this.board = board;
-        this.finished = finished;
+        this.status = status;
+        this.email = email;
     }
 }
