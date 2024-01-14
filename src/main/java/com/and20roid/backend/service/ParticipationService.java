@@ -10,6 +10,9 @@ import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.BoardRepository;
 import com.and20roid.backend.repository.ParticipationRepository;
 import com.and20roid.backend.repository.UserRepository;
+import com.and20roid.backend.vo.ReadRankQuery;
+import com.and20roid.backend.vo.ReadRankingResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +36,11 @@ public class ParticipationService {
         }
 
         participationRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
+    }
+
+    public ReadRankingResponse readRanking() {
+        List<ReadRankQuery> readRankQueries = participationRepository.readRank();
+
+        return new ReadRankingResponse(readRankQueries);
     }
 }
