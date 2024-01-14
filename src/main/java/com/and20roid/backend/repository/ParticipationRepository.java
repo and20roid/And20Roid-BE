@@ -22,4 +22,8 @@ public interface ParticipationRepository extends JpaRepository<ParticipationStat
             "ORDER BY completedTestCount DESC " +
             "LIMIT 50", nativeQuery = true)
     List<ReadRankQuery> readRank();
+
+    int countByUserIdAndStatus(Long userId, String status);
+
+    List<ParticipationStatus> findByUserIdAndStatus(Long userId, String status);
 }
