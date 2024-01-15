@@ -27,6 +27,7 @@ public class Board extends BaseTimeEntity {
     private int recruitmentNum;    // 모집자 수
     private String state;           // 모집 상태 -> 모집중 / 모집완료
     private String thumbnailUrl;   // 썸네일 URL
+    private String introLine;       // 한 줄 소개
     private String appTestLink;     // 앱 테스트 링크
     private String webTestLink;     // 웹 테스트 링크
     private Long views;             // 조회수
@@ -43,6 +44,7 @@ public class Board extends BaseTimeEntity {
         this.recruitmentNum = createBoardRequest.getRecruitmentNum();
         this.state = Constant.BOARD_STATE_OPEN;
         this.thumbnailUrl = thumbnailUrl;
+        this.introLine = createBoardRequest.getIntroLine();
         this.appTestLink = createBoardRequest.getAppTestLink();
         this.webTestLink = createBoardRequest.getWebTestLink();
         this.user = user;

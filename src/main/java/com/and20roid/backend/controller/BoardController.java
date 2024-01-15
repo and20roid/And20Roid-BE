@@ -51,7 +51,11 @@ public class BoardController {
      */
     @GetMapping("")
     public ResponseEntity<ReadBoardsResponse> readBoards(@RequestParam Long lastBoardId) {
-        return new ResponseEntity<>(boardService.readBoards(lastBoardId, DEFAULT_ONE_PAGE_SIZE), HttpStatus.OK);
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        return new ResponseEntity<>(boardService.readBoards(lastBoardId, DEFAULT_ONE_PAGE_SIZE, userId), HttpStatus.OK);
     }
 
     /**

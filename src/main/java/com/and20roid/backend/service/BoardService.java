@@ -12,6 +12,7 @@ import com.and20roid.backend.repository.BoardRepository;
 import com.and20roid.backend.repository.UserRepository;
 import com.and20roid.backend.vo.CreateBoardRequest;
 import com.and20roid.backend.vo.ReadBoardInfoResponse;
+import com.and20roid.backend.vo.ReadBoardQuery;
 import com.and20roid.backend.vo.ReadBoardsResponse;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -63,19 +64,25 @@ public class BoardService {
         appIntroductionImageRepository.saveAll(collect);
     }
 
-    public ReadBoardsResponse readBoards(Long lastBoardId, int pageSize) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "id");
-        PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
-
-        Page<Board> page = null;
+    public ReadBoardsResponse readBoards(Long lastBoardId, int pageSize, Long userId) {
+//        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+//        PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
+//
+//        Page<Board> page = null;
+//
+//        if (lastBoardId == null || lastBoardId < 1) {
+//            page = boardRepository.findAll(pageRequest);
+//        } else {
+//            page = boardRepository.findByIdLessThan(lastBoardId, pageRequest);
+//        }
 
         if (lastBoardId == null || lastBoardId < 1) {
-            page = boardRepository.findAll(pageRequest);
-        } else {
-            page = boardRepository.findByIdLessThan(lastBoardId, pageRequest);
+            lastBoardId = (long) pageSize + 1;
         }
 
-        return new ReadBoardsResponse(page.getContent());
+        List<ReadBoardQuery> readBoardsResponse = boardRepository.findReadBoardsResponse(userId, lastBoardId, pageSize);
+
+        return new ReadBoardsResponse(readBoardsResponse);
 
     }
 
