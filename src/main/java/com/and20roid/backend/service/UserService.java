@@ -10,7 +10,7 @@ import com.and20roid.backend.repository.AuthorityRepository;
 import com.and20roid.backend.repository.BoardRepository;
 import com.and20roid.backend.repository.ParticipationRepository;
 import com.and20roid.backend.repository.UserRepository;
-import com.and20roid.backend.vo.ReadUserResponse;
+import com.and20roid.backend.vo.ReadUserTestingStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,10 +40,10 @@ public class UserService {
         return "성공";
     }
 
-    public ReadUserResponse readUser(Long userId) {
+    public ReadUserTestingStats readUserTestingStats(Long userId) {
         int uploadBoardCount = boardRepository.countByUserId(userId);
         int completedTestCount = participationRepository.countByUserIdAndStatus(userId, BOARD_PARTICIPATION_COMPLETED);
 
-        return new ReadUserResponse(completedTestCount, uploadBoardCount);
+        return new ReadUserTestingStats(completedTestCount, uploadBoardCount);
     }
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReadUserResponse {
+public class ReadUserTestingStats {
     private int completedTestCount;
     private int uploadBoardCount;
 }
