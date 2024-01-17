@@ -1,6 +1,7 @@
 package com.and20roid.backend.controller;
 
 import com.and20roid.backend.service.UserService;
+import com.and20roid.backend.vo.CreateFcmTokenRequest;
 import com.and20roid.backend.vo.ReadUserTestingStats;
 import com.and20roid.backend.vo.SignupRequest;
 import javax.annotation.Nullable;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,5 +47,29 @@ public class UserController {
         }
 
         return new ResponseEntity<>(userService.readUserTestingStats(userId), HttpStatus.OK);
+    }
+
+    /**
+     * FCM 토큰 생성
+     */
+    @PostMapping("/tokens")
+    public ResponseEntity<String> createFcmToken(@RequestBody CreateFcmTokenRequest request) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        userService.createFcmToken(request.getToken(), userId);
+        return new ResponseEntity<>("fcm 토큰 저장", HttpStatus.OK);
+    }
+
+    /**
+     * FCM 토큰 삭제
+     */
+    @DeleteMapping("/tokens")
+    public ResponseEntity<String> deleteFcmToken() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        userService.deleteFcmToken(userId);
+        return new ResponseEntity<>("fcm 토큰 삭제", HttpStatus.OK);
     }
 }
