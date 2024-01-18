@@ -10,15 +10,6 @@ jobs:
     steps:
       - name: 저장소 Checkout
         uses: actions/checkout@v2
-      
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
-      
-      - name: Init gradle wrapper
-        run: gradle wrapper
-      
-      - name: Change wrapper permissions
-        run: chmod +x ./gradlew
 
       - name: 스프링부트 애플리케이션 빌드
         run: ./gradlew bootJar
