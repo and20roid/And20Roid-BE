@@ -1,0 +1,37 @@
+name: Backend CD # actions 이름
+
+on:
+  push:
+    branches: [ master ] # master branch에 push될 때 해당 파일을 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 저장소 Checkout
+        uses: actions/checkout@v2
+
+      - name: 스프링부트 애플리케이션 빌드
+        run: ./gradlew bootJar
+
+      - name: 도커 이미지 빌드
+        run: docker build -t ${{ secrets.DOCKER_IMG }} --platform linux/amd64 .
+
+      - name: 도커 이미지 push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ${{ secrets.DOCKER_IMG }} 
+
+      - name: 배포
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_SERVER_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            docker stop $(docker ps -a -q) 
+            docker rm -f $(docker ps -qa)
+            docker pull ${{ secrets.DOCKER_IMG }}
+            docker-compose up -d
+            docker image prune -f
