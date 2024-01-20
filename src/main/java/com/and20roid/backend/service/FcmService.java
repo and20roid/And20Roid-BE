@@ -11,7 +11,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import java.util.Optional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,30 +33,29 @@ public class FcmService {
         User user = userRepository.findById(createFcmDto.getTargetUserId())
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
-        Optional<FcmToken> fcmTokenOptional = fcmTokenRepository.findByUserId(user.getId());
+        List<FcmToken> fcmTokens = fcmTokenRepository.findByUserId(user.getId());
 
         // 토큰 전송
-        if (fcmTokenOptional.isPresent()) {
-            FcmToken fcmToken = fcmTokenOptional.get();
-
+        if (fcmTokens != null && !fcmTokens.isEmpty()) {
             Notification notification = Notification.builder()
                     .setTitle(createFcmDto.getTitle())
                     .setBody(createFcmDto.getBody())
                     .build();
 
-            Message message = Message.builder()
-                    .setToken(fcmToken.getToken())
-                    .setNotification(notification)
-                    .putData(FCM_CLICK_ACTION, FCM_CLICK_ACTION_JOINTEST)
-                    .build();
-
-            try {
-                firebaseMessaging.send(message);
-                log.info("FCM 알림 전송 성공 Title: [{}], Body: [{}], targetUserId: [{}]", createFcmDto.getTitle(),
-                        createFcmDto.getBody(), user.getId());
-            } catch (FirebaseMessagingException e) {
-                e.printStackTrace();
-                log.info("FCM 알림 전송 실패 targetUserId: [{}]", user.getId());
+            for (FcmToken fcmToken : fcmTokens) {
+                Message message = Message.builder()
+                        .setToken(fcmToken.getToken())
+                        .setNotification(notification)
+                        .putData(FCM_CLICK_ACTION, FCM_CLICK_ACTION_JOINTEST)
+                        .build();
+                try {
+                    firebaseMessaging.send(message);
+                    log.info("FCM 알림 전송 성공 Title: [{}], Body: [{}], targetUserId: [{}]", createFcmDto.getTitle(),
+                            createFcmDto.getBody(), user.getId());
+                } catch (FirebaseMessagingException e) {
+                    e.printStackTrace();
+                    log.info("FCM 알림 전송 실패 targetUserId: [{}]", user.getId());
+                }
             }
         } else {
             log.info("서버에 userId: [{}]인 유저의 FCM 토큰 정보가 존재하지 않아, 알림을 전송할 수 없습니다.", user.getId());
