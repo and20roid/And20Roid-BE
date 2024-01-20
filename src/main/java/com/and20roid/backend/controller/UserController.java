@@ -1,7 +1,11 @@
 package com.and20roid.backend.controller;
 
+import static com.and20roid.backend.common.constant.Constant.DEFAULT_ONE_PAGE_SIZE;
+
+import com.and20roid.backend.service.FcmService;
 import com.and20roid.backend.service.UserService;
 import com.and20roid.backend.vo.CreateFcmTokenRequest;
+import com.and20roid.backend.vo.ReadFcmMessagesResponse;
 import com.and20roid.backend.vo.ReadUserTestingStats;
 import com.and20roid.backend.vo.SignupRequest;
 import javax.annotation.Nullable;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final FcmService fcmService;
 
     /**
      * 회원가입
@@ -71,5 +76,16 @@ public class UserController {
 
         userService.deleteFcmToken(userId);
         return new ResponseEntity<>("fcm 토큰 삭제", HttpStatus.OK);
+    }
+
+    /**
+     * 알림함 조회
+     */
+    @GetMapping("/messages")
+    public ResponseEntity<ReadFcmMessagesResponse> readFcmMessages() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        return new ResponseEntity<>(fcmService.readMessages(userId, DEFAULT_ONE_PAGE_SIZE), HttpStatus.OK);
     }
 }
