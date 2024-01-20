@@ -33,6 +33,9 @@ public class ParticipationController {
 
     @GetMapping("/ranking")
     public ResponseEntity<ReadRankingResponse> readParticipation() {
-        return new ResponseEntity<>(participationService.readRanking(), HttpStatus.OK);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        return new ResponseEntity<>(participationService.readRanking(userId), HttpStatus.OK);
     }
 }
