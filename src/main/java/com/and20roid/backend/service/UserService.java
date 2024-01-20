@@ -59,7 +59,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
-        fcmTokenRepository.save(new FcmToken(user, token));
+        // 중복 데이터 저장되지 않도록
+        if (!fcmTokenRepository.existsByUserIdAndToken(userId, token)) {
+            log.info("FCM 토큰 생성 by userId: [{}], token: [{}]", userId, token);
+            fcmTokenRepository.save(new FcmToken(user, token));
+        }
     }
 
     @Transactional
