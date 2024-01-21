@@ -82,10 +82,10 @@ public class UserController {
      * 알림함 조회
      */
     @GetMapping("/messages")
-    public ResponseEntity<ReadFcmMessagesResponse> readFcmMessages() {
+    public ResponseEntity<ReadFcmMessagesResponse> readFcmMessages(@Nullable @RequestParam Long lastMessageId) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long userId = Long.parseLong(userDetails.getUsername());
 
-        return new ResponseEntity<>(fcmService.readMessages(userId, DEFAULT_ONE_PAGE_SIZE), HttpStatus.OK);
+        return new ResponseEntity<>(fcmService.readMessages(userId, DEFAULT_ONE_PAGE_SIZE, lastMessageId), HttpStatus.OK);
     }
 }

@@ -41,12 +41,14 @@ public class ReadFcmMessagesResponse {
             this.reqDate = fcmMessage.getReqDate().toString();
             this.successYn = fcmMessage.isSuccessYn();
             this.type = fcmMessage.getType();
-            this.boardId = fcmMessage.getBoard().getId();
-            this.thumbnailUrl = fcmMessage.getBoard().getThumbnailUrl();
-            this.boardTitle = fcmMessage.getBoard().getTitle();
-            this.introLine = fcmMessage.getBoard().getIntroLine();
-            this.appTestLink = fcmMessage.getBoard().getAppTestLink();
-            this.webTestLink = fcmMessage.getBoard().getWebTestLink();
+            if (fcmMessage.getBoard() != null) {
+                this.boardId = fcmMessage.getBoard().getId();
+                this.thumbnailUrl = fcmMessage.getBoard().getThumbnailUrl();
+                this.boardTitle = fcmMessage.getBoard().getTitle();
+                this.introLine = fcmMessage.getBoard().getIntroLine();
+                this.appTestLink = fcmMessage.getBoard().getAppTestLink();
+                this.webTestLink = fcmMessage.getBoard().getWebTestLink();
+            }
         }
     }
 }

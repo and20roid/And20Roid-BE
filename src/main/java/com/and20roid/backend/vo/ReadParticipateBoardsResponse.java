@@ -29,6 +29,7 @@ public class ReadParticipateBoardsResponse {
         private String state;           // 모집 상태 -> 모집중 / 모집완료
         private String thumbnailUrl;   // 썸네일 URL
         private String createdDate;     // 생성일
+        private String introLine;       // 한줄소개
 
         public ReadParticipateBoardResponse(Board board) {
             this.id = board.getId();
@@ -38,6 +39,7 @@ public class ReadParticipateBoardsResponse {
             this.state = board.getState();
             this.thumbnailUrl = board.getThumbnailUrl();
             this.createdDate = board.getCreatedDate().toString();
+            this.introLine = board.getIntroLine();
         }
     }
 }

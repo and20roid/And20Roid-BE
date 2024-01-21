@@ -81,13 +81,19 @@ public class FcmService {
                         createMessage.getBody(), createMessage.getType(), successYn, createMessage.getBoard()));
     }
 
-    public ReadFcmMessagesResponse readMessages(long userId, int pageSize) {
+    public ReadFcmMessagesResponse readMessages(long userId, int pageSize, Long lastMessageId) {
         log.info("start readMessages by userId: [{}]", userId);
 
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
 
-        Page<FcmMessage> fcmMessagePage = fcmMessageRepository.findAll(pageRequest);
+        Page<FcmMessage> fcmMessagePage = null;
+
+        if (lastMessageId == null || lastMessageId < 1) {
+            fcmMessagePage = fcmMessageRepository.findByUserId(userId, pageRequest);
+        } else {
+            fcmMessagePage = fcmMessageRepository.findByIdLessThanAndUserId(lastMessageId, userId, pageRequest);
+        }
 
         return new ReadFcmMessagesResponse(fcmMessagePage.getContent());
     }
