@@ -25,5 +25,7 @@ public interface ParticipationRepository extends JpaRepository<ParticipationStat
 
     int countByUserIdAndStatus(Long userId, String status);
 
-    List<ParticipationStatus> findByUserIdAndStatus(Long userId, String status);
+//    List<ParticipationStatus> findByUserIdAndStatus(Long userId, String status);
+
+    List<ParticipationStatus> findByUserId(Long userId);
 }

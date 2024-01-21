@@ -44,8 +44,10 @@ public class MyPageService {
 
         Page<Board> page = null;
 
-        List<ParticipationStatus> participationStatuses = participationRepository.findByUserIdAndStatus(userId,
-                BOARD_PARTICIPATION_IN_PROGRESS);
+//        List<ParticipationStatus> participationStatuses = participationRepository.findByUserIdAndStatus(userId,
+//                BOARD_PARTICIPATION_IN_PROGRESS);
+
+        List<ParticipationStatus> participationStatuses = participationRepository.findByUserId(userId);
 
         List<Long> participateBoardIdList = participationStatuses.stream()
                 .map(participationStatus -> participationStatus.getBoard().getId())
