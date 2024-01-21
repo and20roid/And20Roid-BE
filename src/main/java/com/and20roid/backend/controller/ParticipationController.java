@@ -21,6 +21,9 @@ public class ParticipationController {
 
     private final ParticipationService participationService;
 
+    /**
+     * 모집글 참여
+     */
     @PostMapping("")
     public ResponseEntity<String> createParticipation(@RequestBody CreateParticipationRequest request) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -31,6 +34,9 @@ public class ParticipationController {
         return new ResponseEntity<>("성공", HttpStatus.OK);
     }
 
+    /**
+     * 랭킹 조회
+     */
     @GetMapping("/ranking")
     public ResponseEntity<ReadRankingResponse> readParticipation() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

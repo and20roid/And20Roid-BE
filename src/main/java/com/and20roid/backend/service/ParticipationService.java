@@ -52,6 +52,10 @@ public class ParticipationService {
             throw new CustomException(CommonCode.ALREADY_PARTICIPATE_BOARD);
         }
 
+        if (board.getUser().getId().equals(user.getId())) {
+            throw new CustomException(CommonCode.CANNOT_PARTICIPATE_OWN_BOARD);
+        }
+
         participationRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
 
         fcmService.sendMessageByToken(new CreateMessage(board.getUser().getId(),
@@ -63,6 +67,7 @@ public class ParticipationService {
     }
 
     public ReadRankingResponse readRanking(long userId) {
+        log.info("start readRanking by userId: [{}]", userId);
         List<ReadRankQuery> readRankQueries = participationRepository.readRank();
 
         List<Long> userIdList = readRankQueries.stream()

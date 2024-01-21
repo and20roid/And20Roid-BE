@@ -28,7 +28,8 @@ public enum CommonCode {
     FILE_UPLOAD_FAIL(400, -3001, "파일 업로드에 실패했습니다"),
 
     //-4000: participation
-    ALREADY_PARTICIPATE_BOARD(400, -4000, "이미 참여한 테스트입니다.");
+    ALREADY_PARTICIPATE_BOARD(400, -4000, "이미 참여한 테스트입니다."),
+    CANNOT_PARTICIPATE_OWN_BOARD(400, -4001, "자신의 테스트는 참여하실 수 없습니다.");
 
 
     private int status;
