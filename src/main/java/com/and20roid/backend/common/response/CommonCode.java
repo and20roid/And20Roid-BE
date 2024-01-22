@@ -29,7 +29,10 @@ public enum CommonCode {
 
     //-4000: participation
     ALREADY_PARTICIPATE_BOARD(400, -4000, "이미 참여한 테스트입니다."),
-    CANNOT_PARTICIPATE_OWN_BOARD(400, -4001, "자신의 테스트는 참여하실 수 없습니다.");
+    CANNOT_PARTICIPATE_OWN_BOARD(400, -4001, "자신의 테스트는 참여하실 수 없습니다."),
+    INVALID_BOARD_STATE_FOR_INVITE(400, -4002, "모집 중이 아닌 모집 글에 참여를 요청하실 수 없습니다."),
+    ALREADY_PARTICIPATE_USER(400, -4003, "이미 테스트에 참여한 유저입니다."),
+    ALREADY_INVITED_USER(400, -4004, "이미 테스트에 초대된 유저입니다.");
 
 
     private int status;
