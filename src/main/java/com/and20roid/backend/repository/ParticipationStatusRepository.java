@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface ParticipationRepository extends JpaRepository<ParticipationStatus, Long> {
+public interface ParticipationStatusRepository extends JpaRepository<ParticipationStatus, Long> {
 
     boolean existsByBoardIdAndUserId(Long boardId, Long userId);
 
@@ -28,4 +28,6 @@ public interface ParticipationRepository extends JpaRepository<ParticipationStat
 //    List<ParticipationStatus> findByUserIdAndStatus(Long userId, String status);
 
     List<ParticipationStatus> findByUserId(Long userId);
+
+    List<ParticipationStatus> findByBoardId(Long boardId);
 }

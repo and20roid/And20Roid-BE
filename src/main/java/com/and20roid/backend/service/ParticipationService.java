@@ -12,13 +12,13 @@ import com.and20roid.backend.entity.ParticipationInviteStatus;
 import com.and20roid.backend.entity.ParticipationStatus;
 import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.BoardRepository;
-import com.and20roid.backend.repository.FcmMessageRepository;
 import com.and20roid.backend.repository.ParticipationInviteStatusRepository;
-import com.and20roid.backend.repository.ParticipationRepository;
+import com.and20roid.backend.repository.ParticipationStatusRepository;
 import com.and20roid.backend.repository.UserInteractionStatusRepository;
 import com.and20roid.backend.repository.UserRepository;
 import com.and20roid.backend.vo.CreateMessage;
 import com.and20roid.backend.vo.ReadBoardWithInviteInfosResponse;
+import com.and20roid.backend.vo.ReadParticipantsResponse;
 import com.and20roid.backend.vo.ReadRankQuery;
 import com.and20roid.backend.vo.ReadRankingResponse;
 import com.and20roid.backend.vo.ReadBoardWithInviteInfoQuery;
@@ -37,11 +37,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ParticipationService {
 
-    private final ParticipationRepository participationRepository;
+    private final ParticipationStatusRepository participationStatusRepository;
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
     private final UserInteractionStatusRepository userInteractionStatusRepository;
     private final ParticipationInviteStatusRepository participationInviteStatusRepository;
+
 
     private final FcmService fcmService;
 
@@ -56,7 +57,7 @@ public class ParticipationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
-        if (participationRepository.existsByBoardIdAndUserId(boardId, user.getId())) {
+        if (participationStatusRepository.existsByBoardIdAndUserId(boardId, user.getId())) {
             throw new CustomException(CommonCode.ALREADY_PARTICIPATE_BOARD);
         }
 
@@ -64,7 +65,7 @@ public class ParticipationService {
             throw new CustomException(CommonCode.CANNOT_PARTICIPATE_OWN_BOARD);
         }
 
-        participationRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
+        participationStatusRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
 
         fcmService.sendMessageByToken(new CreateMessage(board.getUser().getId(),
                 messageSource.getMessage("TITLE_002", null, Locale.getDefault()),
@@ -76,7 +77,7 @@ public class ParticipationService {
 
     public ReadRankingResponse readRanking(long userId) {
         log.info("start readRanking by userId: [{}]", userId);
-        List<ReadRankQuery> readRankQueries = participationRepository.readRank();
+        List<ReadRankQuery> readRankQueries = participationStatusRepository.readRank();
 
         List<Long> userIdList = readRankQueries.stream()
                 .map(ReadRankQuery::getUserId)
@@ -130,7 +131,7 @@ public class ParticipationService {
         }
 
         // 이미 참여한 경우 예외처리
-        if (participationRepository.existsByBoardIdAndUserId(board.getId(), invitedUserId)) {
+        if (participationStatusRepository.existsByBoardIdAndUserId(board.getId(), invitedUserId)) {
             throw new CustomException(CommonCode.ALREADY_PARTICIPATE_USER);
         }
 
@@ -146,5 +147,13 @@ public class ParticipationService {
                 board));
 
         participationInviteStatusRepository.save(new ParticipationInviteStatus(board, invitedUser));
+    }
+
+    public ReadParticipantsResponse readParticipants(Long boardId) {
+        log.info("start readParticipant by boardId: [{}]", boardId);
+
+        List<ParticipationStatus> participationStatuses = participationStatusRepository.findByBoardId(boardId);
+
+        return new ReadParticipantsResponse(participationStatuses);
     }
 }

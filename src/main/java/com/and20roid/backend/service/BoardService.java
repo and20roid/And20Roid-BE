@@ -39,6 +39,7 @@ public class BoardService {
 
     public void createBoard(CreateBoardRequest createBoardRequest, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles, long userId)
             throws FileUploadException {
+        log.info("start createBoard by userId: [{}], title: [{}]", userId, createBoardRequest.getTitle());
 
         if (multipartFiles.size() > 3) {
             throw new CustomException(CommonCode.TOO_MANY_IMAGES);
@@ -65,6 +66,7 @@ public class BoardService {
     }
 
     public ReadBoardsResponse readBoards(Long lastBoardId, int pageSize, Long userId) {
+        log.info("start readBoards by lastBoardId: [{}], userId: [{}]", lastBoardId, userId);
 //        Sort sort = Sort.by(Sort.Direction.DESC, "id");
 //        PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
 //
@@ -87,6 +89,7 @@ public class BoardService {
     }
 
     public ReadBoardInfoResponse readBoard(Long boardId) {
+        log.info("start readBoard by boardId: [{}]", boardId);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -107,6 +110,7 @@ public class BoardService {
 
     @Transactional
     public String updateBoardLikes(Long boardId, long userId) {
+        log.info("start updateBoardLikes by boardId: [{}], userId: [{}]", boardId, userId);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 

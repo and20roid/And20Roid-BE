@@ -55,7 +55,7 @@ public class FcmService {
                 Message message = Message.builder()
                         .setToken(fcmToken.getToken())
                         .setNotification(notification)
-                        .putData(FCM_CLICK_ACTION, FCM_CLICK_ACTION_JOINTEST)
+                        .putData(FCM_CLICK_ACTION, createMessage.getType())
                         .build();
                 try {
                     firebaseMessaging.send(message);

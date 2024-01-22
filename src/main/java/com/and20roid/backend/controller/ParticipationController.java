@@ -6,6 +6,7 @@ import com.and20roid.backend.service.ParticipationService;
 import com.and20roid.backend.vo.CreateParticipateInviteRequest;
 import com.and20roid.backend.vo.CreateParticipationRequest;
 import com.and20roid.backend.vo.ReadBoardWithInviteInfosResponse;
+import com.and20roid.backend.vo.ReadParticipantsResponse;
 import com.and20roid.backend.vo.ReadRankingResponse;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -76,5 +77,13 @@ public class ParticipationController {
         participationService.createParticipateInvite(request.getBoardId(), userId, invitedUserId);
 
         return new ResponseEntity<>("성공", HttpStatus.OK);
+    }
+
+    /**
+     * 모집원 보기
+     */
+    @GetMapping("/{boardId}/participants")
+    public ResponseEntity<ReadParticipantsResponse> readParticipants(@PathVariable Long boardId) {
+        return new ResponseEntity<>(participationService.readParticipants(boardId), HttpStatus.OK);
     }
 }

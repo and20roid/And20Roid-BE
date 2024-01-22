@@ -1,11 +1,9 @@
 package com.and20roid.backend.service;
 
-import static com.and20roid.backend.common.constant.Constant.BOARD_PARTICIPATION_IN_PROGRESS;
-
 import com.and20roid.backend.entity.Board;
 import com.and20roid.backend.entity.ParticipationStatus;
 import com.and20roid.backend.repository.BoardRepository;
-import com.and20roid.backend.repository.ParticipationRepository;
+import com.and20roid.backend.repository.ParticipationStatusRepository;
 import com.and20roid.backend.vo.ReadParticipateBoardsResponse;
 import com.and20roid.backend.vo.ReadUploadBoardsResponse;
 import java.util.List;
@@ -20,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class MyPageService {
 
     private final BoardRepository boardRepository;
-    private final ParticipationRepository participationRepository;
+    private final ParticipationStatusRepository participationStatusRepository;
 
     public ReadUploadBoardsResponse readUploadBoards(Long lastBoardId, int pageSize, long userId) {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
@@ -47,7 +45,7 @@ public class MyPageService {
 //        List<ParticipationStatus> participationStatuses = participationRepository.findByUserIdAndStatus(userId,
 //                BOARD_PARTICIPATION_IN_PROGRESS);
 
-        List<ParticipationStatus> participationStatuses = participationRepository.findByUserId(userId);
+        List<ParticipationStatus> participationStatuses = participationStatusRepository.findByUserId(userId);
 
         List<Long> participateBoardIdList = participationStatuses.stream()
                 .map(participationStatus -> participationStatus.getBoard().getId())

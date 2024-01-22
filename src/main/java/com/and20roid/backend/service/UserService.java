@@ -10,7 +10,7 @@ import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.AuthorityRepository;
 import com.and20roid.backend.repository.BoardRepository;
 import com.and20roid.backend.repository.FcmTokenRepository;
-import com.and20roid.backend.repository.ParticipationRepository;
+import com.and20roid.backend.repository.ParticipationStatusRepository;
 import com.and20roid.backend.repository.UserRepository;
 import com.and20roid.backend.vo.ReadUserTestingStats;
 import jakarta.transaction.Transactional;
@@ -28,7 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
     private final BoardRepository boardRepository;
-    private final ParticipationRepository participationRepository;
+    private final ParticipationStatusRepository participationStatusRepository;
     private final FcmTokenRepository fcmTokenRepository;
 
     public String signup(String uid, String nickname) {
@@ -48,7 +48,7 @@ public class UserService {
         log.info("start readUserTestingStats by userId[{}]", userId);
 
         int uploadBoardCount = boardRepository.countByUserId(userId);
-        int completedTestCount = participationRepository.countByUserIdAndStatus(userId, BOARD_PARTICIPATION_COMPLETED);
+        int completedTestCount = participationStatusRepository.countByUserIdAndStatus(userId, BOARD_PARTICIPATION_COMPLETED);
 
         return new ReadUserTestingStats(completedTestCount, uploadBoardCount);
     }
