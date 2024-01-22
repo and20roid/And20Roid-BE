@@ -88,24 +88,27 @@ public class BoardService {
 
     }
 
-    public ReadBoardInfoResponse readBoard(Long boardId) {
-        log.info("start readBoard by boardId: [{}]", boardId);
+    public ReadBoardInfoResponse readBoard(Long boardId, Long userId) {
+        log.info("start readBoard by boardId: [{}], userId: [{}]", boardId, userId);
+
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
-        List<AppIntroductionImage> appIntroductionImages = appIntroductionImageRepository.findAllByBoard(board);
+        ReadBoardQuery readBoardQuery = boardRepository.findReadBoardResponse(userId, boardId);
 
-        if (appIntroductionImages == null || appIntroductionImages.isEmpty()) {
-            throw new CustomException(CommonCode.ZERO_INTRODUCTION_IMAGES);
-        }
-
-        List<String> imageUrls = appIntroductionImages.stream()
-                .map(AppIntroductionImage::getUrl)
-                .toList();
+//        List<AppIntroductionImage> appIntroductionImages = appIntroductionImageRepository.findAllByBoard(board);
+//
+//        if (appIntroductionImages == null || appIntroductionImages.isEmpty()) {
+//            throw new CustomException(CommonCode.ZERO_INTRODUCTION_IMAGES);
+//        }
+//
+//        List<String> imageUrls = appIntroductionImages.stream()
+//                .map(AppIntroductionImage::getUrl)
+//                .toList();
 
         Board updatedBoard = boardRepository.save(board.addViews());
 
-        return new ReadBoardInfoResponse(updatedBoard, imageUrls);
+        return new ReadBoardInfoResponse(updatedBoard, readBoardQuery);
     }
 
     @Transactional

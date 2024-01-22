@@ -63,7 +63,11 @@ public class BoardController {
      */
     @GetMapping("/{boardId}")
     public ResponseEntity<ReadBoardInfoResponse> readBoard(@PathVariable Long boardId) {
-        return new ResponseEntity<>(boardService.readBoard(boardId), HttpStatus.OK);
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        return new ResponseEntity<>(boardService.readBoard(boardId, userId), HttpStatus.OK);
     }
 
     /**
