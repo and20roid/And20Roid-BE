@@ -41,6 +41,9 @@ public class Board extends BaseTimeEntity {
     @Nullable
     private Boolean fcmSentByScheduler; // 스케줄러에 의해 fcm 메시지가 전송되었는지 여부
 
+    @Nullable
+    private LocalDateTime endTime;    // 테스트 종료 시간
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -60,6 +63,7 @@ public class Board extends BaseTimeEntity {
         this.likes = 0L;
         this.startTime = null;
         this.fcmSentByScheduler = null;
+        this.endTime = null;
     }
 
     public Board addViews() {
@@ -94,6 +98,11 @@ public class Board extends BaseTimeEntity {
 
     public Board updateFcmSentByScheduler(boolean fcmSentByScheduler) {
         this.fcmSentByScheduler = fcmSentByScheduler;
+        return this;
+    }
+
+    public Board updateEndTime() {
+        this.endTime = LocalDateTime.now();
         return this;
     }
 }

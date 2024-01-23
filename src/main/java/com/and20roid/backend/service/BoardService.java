@@ -1,9 +1,12 @@
 package com.and20roid.backend.service;
 
+import static com.and20roid.backend.common.constant.Constant.BOARD_PARTICIPATION_COMPLETED;
 import static com.and20roid.backend.common.constant.Constant.BOARD_PARTICIPATION_IN_PROGRESS;
+import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_END;
 import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_OPEN;
 import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_PENDING;
 import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_PROCEEDING;
+import static com.and20roid.backend.common.constant.Constant.MESSAGE_TYPE_END_TESTER;
 import static com.and20roid.backend.common.constant.Constant.MESSAGE_TYPE_START;
 
 import com.and20roid.backend.common.exception.CustomException;
@@ -189,6 +192,47 @@ public class BoardService {
         board.updateStatus(BOARD_STATE_PROCEEDING);
         board.updateStartTime();
         board.updateFcmSentByScheduler(false);
+
+        boardRepository.save(board);
+    }
+
+    public void endTest(Long boardId, long userId) {
+        log.info("start endTest by boardId: [{}], userId: [{}]", boardId, userId);
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
+
+        // 작성자가 아닌 경우 예외처리
+        if (board.getUser().getId() != userId) {
+            throw new CustomException(CommonCode.FORBIDDEN_BOARD);
+        }
+
+        // 진행 중이 아닌 경우 예외처리
+        if (!(board.getState().equals(BOARD_STATE_PROCEEDING))) {
+            throw new CustomException(CommonCode.INVALID_BOARD_STATE);
+        }
+
+        List<ParticipationStatus> participationStatuses = participationStatusRepository.findByBoardId(boardId);
+
+        // fcm 전송
+        participationStatuses.stream()
+                .map(ParticipationStatus::getUser)
+                .forEach(user -> fcmService.sendMessageByToken(new CreateMessage(user.getId(),
+                                messageSource.getMessage("TITLE_005", null, Locale.getDefault()),
+                                messageSource.getMessage("CONTENT_005", new String[]{board.getTitle()}, Locale.getDefault()),
+                                MESSAGE_TYPE_END_TESTER,
+                                board)
+                        )
+                );
+
+        // 상태 변경
+        participationStatuses
+                .forEach(participationStatus -> participationStatus.updateStatus(BOARD_PARTICIPATION_COMPLETED));
+
+        participationStatusRepository.saveAll(participationStatuses);
+
+        board.updateStatus(BOARD_STATE_END);
+        board.updateEndTime();
 
         boardRepository.save(board);
     }

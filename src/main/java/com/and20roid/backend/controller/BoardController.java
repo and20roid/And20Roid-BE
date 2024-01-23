@@ -96,4 +96,17 @@ public class BoardController {
 
         return new ResponseEntity<>("테스트 시작", HttpStatus.OK);
     }
+
+    /**
+     * 테스트 종료
+     */
+    @PostMapping("/{boardId}/end")
+    public ResponseEntity<String> endTest(@PathVariable Long boardId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        boardService.endTest(boardId, userId);
+
+        return new ResponseEntity<>("테스트 종료", HttpStatus.OK);
+    }
 }
