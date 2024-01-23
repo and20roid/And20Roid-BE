@@ -83,4 +83,17 @@ public class BoardController {
 
         return ResponseEntity.ok(msg);
     }
+
+    /**
+     * 테스트 시작
+     */
+    @PostMapping("/{boardId}/start")
+    public ResponseEntity<String> startTest(@PathVariable Long boardId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        boardService.startTest(boardId, userId);
+
+        return new ResponseEntity<>("테스트 시작", HttpStatus.OK);
+    }
 }

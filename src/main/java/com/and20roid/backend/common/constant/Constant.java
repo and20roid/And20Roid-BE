@@ -3,7 +3,9 @@ package com.and20roid.backend.common.constant;
 public class Constant {
 
     public static final String BOARD_STATE_OPEN = "모집중";
-    public static final String BOARD_STATE_CLOSED = "모집완료";
+    public static final String BOARD_STATE_PENDING = "모집완료";
+    public static final String BOARD_STATE_PROCEEDING = "테스트중";
+    public static final String BOARD_STATE_END = "테스트완료";
 
     public static final int DEFAULT_ONE_PAGE_SIZE = 10;
 
@@ -14,5 +16,6 @@ public class Constant {
     public static final String MESSAGE_TYPE_REQUEST = "request";
     public static final String MESSAGE_TYPE_JOIN = "join";
     public static final String MESSAGE_TYPE_START = "start";
-    public static final String MESSAGE_TYPE_END = "end";
+    public static final String MESSAGE_TYPE_END_UPLOADER = "endUploader";
+    public static final String MESSAGE_TYPE_END_TESTER = "endTester";
 }

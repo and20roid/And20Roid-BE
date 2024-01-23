@@ -1,25 +1,36 @@
 package com.and20roid.backend.service;
 
+import static com.and20roid.backend.common.constant.Constant.BOARD_PARTICIPATION_IN_PROGRESS;
+import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_OPEN;
+import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_PENDING;
+import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_PROCEEDING;
+import static com.and20roid.backend.common.constant.Constant.MESSAGE_TYPE_START;
+
 import com.and20roid.backend.common.exception.CustomException;
 import com.and20roid.backend.common.response.CommonCode;
 import com.and20roid.backend.entity.AppIntroductionImage;
 import com.and20roid.backend.entity.Board;
 import com.and20roid.backend.entity.BoardLikeStatus;
+import com.and20roid.backend.entity.ParticipationStatus;
 import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.AppIntroductionImageRepository;
 import com.and20roid.backend.repository.BoardLikeStatusRepository;
 import com.and20roid.backend.repository.BoardRepository;
+import com.and20roid.backend.repository.ParticipationStatusRepository;
 import com.and20roid.backend.repository.UserRepository;
 import com.and20roid.backend.vo.CreateBoardRequest;
+import com.and20roid.backend.vo.CreateMessage;
 import com.and20roid.backend.vo.ReadBoardInfoResponse;
 import com.and20roid.backend.vo.ReadBoardQuery;
 import com.and20roid.backend.vo.ReadBoardsResponse;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -35,7 +46,10 @@ public class BoardService {
     private final UserRepository userRepository;
     private final AppIntroductionImageRepository appIntroductionImageRepository;
     private final BoardLikeStatusRepository boardLikeStatusRepository;
+    private final ParticipationStatusRepository participationStatusRepository;
     private final AwsS3Service awsS3Service;
+    private final FcmService fcmService;
+    private final MessageSource messageSource;
 
     public void createBoard(CreateBoardRequest createBoardRequest, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles, long userId)
             throws FileUploadException {
@@ -135,5 +149,45 @@ public class BoardService {
         }
 
         return msg;
+    }
+
+    public void startTest(Long boardId, long userId) {
+        log.info("start startTest by boardId: [{}], userId: [{}]", boardId, userId);
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
+
+        // 작성자가 아닌 경우 예외처리
+        if (board.getUser().getId() != userId) {
+            throw new CustomException(CommonCode.FORBIDDEN_BOARD);
+        }
+
+        // 이미 진행 중이거나, 종료된 테스트 예외처리
+        if (!(board.getState().equals(BOARD_STATE_OPEN) || board.getState().equals(BOARD_STATE_PENDING))) {
+            throw new CustomException(CommonCode.INVALID_BOARD_STATE);
+        }
+
+        List<ParticipationStatus> participationStatuses = participationStatusRepository.findByBoardId(boardId);
+
+        // fcm 전송
+        participationStatuses.stream()
+                .map(ParticipationStatus::getUser)
+                .forEach(user -> fcmService.sendMessageByToken(new CreateMessage(user.getId(),
+                                messageSource.getMessage("TITLE_003", null, Locale.getDefault()),
+                                messageSource.getMessage("CONTENT_003", new String[]{board.getTitle()}, Locale.getDefault()),
+                                MESSAGE_TYPE_START,
+                                board)
+                        )
+                );
+
+        // 상태 변경
+        participationStatuses
+                        .forEach(participationStatus -> participationStatus.updateStatus(BOARD_PARTICIPATION_IN_PROGRESS));
+
+        participationStatusRepository.saveAll(participationStatuses);
+
+        board.updateStatus(BOARD_STATE_PROCEEDING);
+
+        boardRepository.save(board);
     }
 }

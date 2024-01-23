@@ -71,4 +71,9 @@ public class Board extends BaseTimeEntity {
         this.likes -= 1;
         return this;
     }
+
+    public Board updateStatus(String state) {
+        this.state = state;
+        return this;
+    }
 }

@@ -36,4 +36,9 @@ public class ParticipationStatus extends BaseTimeEntity {
         this.status = status;
         this.email = email;
     }
+
+    public ParticipationStatus updateStatus(String status) {
+        this.status = status;
+        return this;
+    }
 }
