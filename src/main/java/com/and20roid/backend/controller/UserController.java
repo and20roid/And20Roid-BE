@@ -8,6 +8,7 @@ import com.and20roid.backend.vo.CreateFcmTokenRequest;
 import com.and20roid.backend.vo.ReadFcmMessagesResponse;
 import com.and20roid.backend.vo.ReadUserTestingStats;
 import com.and20roid.backend.vo.SignupRequest;
+import com.and20roid.backend.vo.UpdateUserRequest;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -87,5 +89,15 @@ public class UserController {
         long userId = Long.parseLong(userDetails.getUsername());
 
         return new ResponseEntity<>(fcmService.readMessages(userId, DEFAULT_ONE_PAGE_SIZE, lastMessageId), HttpStatus.OK);
+    }
+
+    @PutMapping("")
+    public ResponseEntity<String> updateUser(@RequestBody UpdateUserRequest request) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        userService.updateUser(request.getNickname(), userId);
+
+        return new ResponseEntity<>("유저 업데이트 성공", HttpStatus.OK);
     }
 }

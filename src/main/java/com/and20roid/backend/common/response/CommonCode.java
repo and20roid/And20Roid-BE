@@ -17,6 +17,7 @@ public enum CommonCode {
     //-1000: User
     NONEXISTENT_USER(400, -1000, "존재하지 않는 유저입니다."),
     ALREADY_EXIST_USER(400, -1001, "이미 존재하는 유저입니다."),
+    ALREADY_EXIST_NICKNAME(400, -1002, "이미 존재하는 닉네임입니다."),
 
     //-2000: Board
     NONEXISTENT_BOARD(400, -2000, "존재하지 않는 게시글입니다."),

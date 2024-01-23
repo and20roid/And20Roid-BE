@@ -72,4 +72,19 @@ public class UserService {
 
         fcmTokenRepository.deleteAllByUserId(userId);
     }
+
+    public void updateUser(String nickname, long userId) {
+        log.info("start updateUser by nickname: [{}], userId: [{}]", nickname, userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
+
+        if (userRepository.existsByNickname(nickname)) {
+            throw new CustomException(CommonCode.ALREADY_EXIST_NICKNAME);
+        }
+
+        user.updateNickname(nickname);
+
+        userRepository.save(user);
+    }
 }
