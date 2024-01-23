@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,6 +35,12 @@ public class Board extends BaseTimeEntity {
     private Long views;             // 조회수
     private Long likes;             // 좋아요 개수
 
+    @Nullable
+    private LocalDateTime startTime;    // 테스트 시작 시간
+
+    @Nullable
+    private Boolean fcmSentByScheduler; // 스케줄러에 의해 fcm 메시지가 전송되었는지 여부
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -50,6 +58,8 @@ public class Board extends BaseTimeEntity {
         this.user = user;
         this.views = 0L;
         this.likes = 0L;
+        this.startTime = null;
+        this.fcmSentByScheduler = null;
     }
 
     public Board addViews() {
@@ -74,6 +84,16 @@ public class Board extends BaseTimeEntity {
 
     public Board updateStatus(String state) {
         this.state = state;
+        return this;
+    }
+
+    public Board updateStartTime() {
+        this.startTime = LocalDateTime.now();
+        return this;
+    }
+
+    public Board updateFcmSentByScheduler(boolean fcmSentByScheduler) {
+        this.fcmSentByScheduler = fcmSentByScheduler;
         return this;
     }
 }

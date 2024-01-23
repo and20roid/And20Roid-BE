@@ -187,6 +187,8 @@ public class BoardService {
         participationStatusRepository.saveAll(participationStatuses);
 
         board.updateStatus(BOARD_STATE_PROCEEDING);
+        board.updateStartTime();
+        board.updateFcmSentByScheduler(false);
 
         boardRepository.save(board);
     }

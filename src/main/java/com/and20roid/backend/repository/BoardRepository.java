@@ -3,6 +3,7 @@ package com.and20roid.backend.repository;
 import com.and20roid.backend.entity.Board;
 import com.and20roid.backend.vo.ReadBoardQuery;
 import com.and20roid.backend.vo.ReadBoardWithInviteInfoQuery;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -58,5 +59,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             + "order by ub.id desc "
             + "limit :pageSize", nativeQuery = true)
     List<ReadBoardWithInviteInfoQuery> findBoardsWithInviteInfoByUserId(Long invitedUserId, Long userId, Long lastBoardId, int pageSize);
+
+    List<Board> findAllByStateAndStartTimeIsBeforeAndFcmSentBySchedulerIsFalse(String state, LocalDateTime twoWeeksAgoFromNow);
 
 }
