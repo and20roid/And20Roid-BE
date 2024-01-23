@@ -23,6 +23,7 @@ import com.and20roid.backend.vo.ReadRankQuery;
 import com.and20roid.backend.vo.ReadRankingResponse;
 import com.and20roid.backend.vo.ReadBoardWithInviteInfoQuery;
 import com.and20roid.backend.vo.ReadUserInteractionCountQuery;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class ParticipationService {
 
     private final MessageSource messageSource;
 
+    @Transactional
     public void createParticipation(Long boardId, String email, Long userId) {
         log.info("start createParticipation by boardId: [{}], userId: [{}]", boardId, userId);
 
@@ -66,6 +68,9 @@ public class ParticipationService {
         }
 
         participationStatusRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
+
+        board.addParticipantNum();
+        boardRepository.save(board);
 
         fcmService.sendMessageByToken(new CreateMessage(board.getUser().getId(),
                 messageSource.getMessage("TITLE_002", null, Locale.getDefault()),

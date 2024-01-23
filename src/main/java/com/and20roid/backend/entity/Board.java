@@ -57,6 +57,11 @@ public class Board extends BaseTimeEntity {
         return this;
     }
 
+    public Board addParticipantNum() {
+        this.participantNum += 1;
+        return this;
+    }
+
     public Board addLikes() {
         this.likes += 1;
         return this;
