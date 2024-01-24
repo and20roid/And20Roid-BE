@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class ReadUserTestingStats {
     private int completedTestCount;
     private int uploadBoardCount;
+    private Integer rank;
+    private String nickname;
 }

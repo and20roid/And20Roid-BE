@@ -12,8 +12,10 @@ import com.and20roid.backend.repository.BoardRepository;
 import com.and20roid.backend.repository.FcmTokenRepository;
 import com.and20roid.backend.repository.ParticipationStatusRepository;
 import com.and20roid.backend.repository.UserRepository;
+import com.and20roid.backend.vo.ReadRankQuery;
 import com.and20roid.backend.vo.ReadUserTestingStats;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,10 +49,20 @@ public class UserService {
     public ReadUserTestingStats readUserTestingStats(Long userId) {
         log.info("start readUserTestingStats by userId[{}]", userId);
 
-        int uploadBoardCount = boardRepository.countByUserId(userId);
-        int completedTestCount = participationStatusRepository.countByUserIdAndStatus(userId, BOARD_PARTICIPATION_COMPLETED);
+        int completedTestCount = 0;
+        Integer rank = null;
+        String nickname = null;
 
-        return new ReadUserTestingStats(completedTestCount, uploadBoardCount);
+        int uploadBoardCount = boardRepository.countByUserId(userId);
+        ReadRankQuery readRankQuery = participationStatusRepository.readRankAndCompletedTestCountByUserId(userId);
+
+        if (readRankQuery != null) {
+            completedTestCount = readRankQuery.getCompletedTestCount();
+            rank = readRankQuery.getRank();
+            nickname = readRankQuery.getNickname();
+        }
+
+        return new ReadUserTestingStats(completedTestCount, uploadBoardCount, rank, nickname);
     }
 
     public void createFcmToken(String token, long userId) {
