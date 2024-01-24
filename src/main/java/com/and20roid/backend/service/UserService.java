@@ -36,8 +36,14 @@ public class UserService {
     public String signup(String uid, String nickname) {
         log.info("start signup by uid[{}], nickname[{}]", uid, nickname);
 
+        // 이미 존재하는 유저인 경우 예외처리
         if (userRepository.existsByUid(uid)) {
             throw new CustomException(CommonCode.ALREADY_EXIST_USER);
+        }
+
+        // 이미 존재하는 닉네임인 경우 예외처리
+        if (userRepository.existsByNickname(nickname)) {
+            throw new CustomException(CommonCode.ALREADY_EXIST_NICKNAME);
         }
 
         User savedUser = userRepository.save(new User(uid, nickname));
