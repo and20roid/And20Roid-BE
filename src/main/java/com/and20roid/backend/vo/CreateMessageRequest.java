@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateMessage {
+public class CreateMessageRequest {
 
     private long targetUserId;
     private String title;

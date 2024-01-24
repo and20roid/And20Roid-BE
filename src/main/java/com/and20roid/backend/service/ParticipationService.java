@@ -17,7 +17,7 @@ import com.and20roid.backend.repository.ParticipationInviteStatusRepository;
 import com.and20roid.backend.repository.ParticipationStatusRepository;
 import com.and20roid.backend.repository.UserInteractionStatusRepository;
 import com.and20roid.backend.repository.UserRepository;
-import com.and20roid.backend.vo.CreateMessage;
+import com.and20roid.backend.vo.CreateMessageRequest;
 import com.and20roid.backend.vo.ReadBoardWithInviteInfosResponse;
 import com.and20roid.backend.vo.ReadParticipantsResponse;
 import com.and20roid.backend.vo.ReadRankQuery;
@@ -85,7 +85,7 @@ public class ParticipationService {
 
         boardRepository.save(board);
 
-        fcmService.sendMessageByToken(new CreateMessage(board.getUser().getId(),
+        fcmService.sendMessage(new CreateMessageRequest(board.getUser().getId(),
                 messageSource.getMessage("TITLE_002", null, Locale.getDefault()),
                 messageSource.getMessage("CONTENT_002", new String[]{user.getNickname()}, Locale.getDefault()),
                 MESSAGE_TYPE_JOIN,
@@ -158,7 +158,7 @@ public class ParticipationService {
             throw new CustomException(CommonCode.ALREADY_INVITED_USER);
         }
 
-        fcmService.sendMessageByToken(new CreateMessage(invitedUserId,
+        fcmService.sendMessage(new CreateMessageRequest(invitedUserId,
                 messageSource.getMessage("TITLE_001", null, Locale.getDefault()),
                 messageSource.getMessage("CONTENT_001", new String[]{user.getNickname()}, Locale.getDefault()),
                 MESSAGE_TYPE_REQUEST,

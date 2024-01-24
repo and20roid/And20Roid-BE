@@ -22,7 +22,7 @@ import com.and20roid.backend.repository.BoardRepository;
 import com.and20roid.backend.repository.ParticipationStatusRepository;
 import com.and20roid.backend.repository.UserRepository;
 import com.and20roid.backend.vo.CreateBoardRequest;
-import com.and20roid.backend.vo.CreateMessage;
+import com.and20roid.backend.vo.CreateMessageRequest;
 import com.and20roid.backend.vo.ReadBoardInfoResponse;
 import com.and20roid.backend.vo.ReadBoardQuery;
 import com.and20roid.backend.vo.ReadBoardsResponse;
@@ -34,9 +34,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.context.MessageSource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -175,7 +172,7 @@ public class BoardService {
         // fcm 전송
         participationStatuses.stream()
                 .map(ParticipationStatus::getUser)
-                .forEach(user -> fcmService.sendMessageByToken(new CreateMessage(user.getId(),
+                .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(),
                                 messageSource.getMessage("TITLE_003", null, Locale.getDefault()),
                                 messageSource.getMessage("CONTENT_003", new String[]{board.getTitle()}, Locale.getDefault()),
                                 MESSAGE_TYPE_START,
@@ -217,7 +214,7 @@ public class BoardService {
         // fcm 전송
         participationStatuses.stream()
                 .map(ParticipationStatus::getUser)
-                .forEach(user -> fcmService.sendMessageByToken(new CreateMessage(user.getId(),
+                .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(),
                                 messageSource.getMessage("TITLE_005", null, Locale.getDefault()),
                                 messageSource.getMessage("CONTENT_005", new String[]{board.getTitle()}, Locale.getDefault()),
                                 MESSAGE_TYPE_END_TESTER,

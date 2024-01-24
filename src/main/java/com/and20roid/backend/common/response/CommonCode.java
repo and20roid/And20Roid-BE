@@ -13,6 +13,7 @@ public enum CommonCode {
     // FAIL
     FAIL(500, -1, "실패. 알 수 없는 오류"),
     INVALID_ELEMENTS(400, -2, "조건에 맞지 않는 요소(elements)가 있습니다"),
+    FAIL_SEND_FCM(400, -3, "fcm 알림 전송에 실패하였습니다."),
 
     //-1000: User
     NONEXISTENT_USER(400, -1000, "존재하지 않는 유저입니다."),

@@ -8,19 +8,23 @@ import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.FcmMessageRepository;
 import com.and20roid.backend.repository.FcmTokenRepository;
 import com.and20roid.backend.repository.UserRepository;
-import com.and20roid.backend.vo.CreateMessage;
+import com.and20roid.backend.vo.CreateMessageRequest;
 import com.and20roid.backend.vo.ReadFcmMessagesResponse;
+import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,10 +40,10 @@ public class FcmService {
     private final FcmTokenRepository fcmTokenRepository;
     private final FcmMessageRepository fcmMessageRepository;
 
-    public void sendMessageByToken(CreateMessage createMessage) {
-        log.info("start sendMessageByToken");
+    public void sendMessage(CreateMessageRequest request) {
+        log.info("start sendMessage");
 
-        User user = userRepository.findById(createMessage.getTargetUserId())
+        User user = userRepository.findById(request.getTargetUserId())
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
         List<FcmToken> fcmTokens = fcmTokenRepository.findByUserId(user.getId());
@@ -47,38 +51,49 @@ public class FcmService {
         // 토큰 전송
         if (fcmTokens != null && !fcmTokens.isEmpty()) {
             Notification notification = Notification.builder()
-                    .setTitle(createMessage.getTitle())
-                    .setBody(createMessage.getBody())
+                    .setTitle(request.getTitle())
+                    .setBody(request.getBody())
                     .build();
 
-            for (FcmToken fcmToken : fcmTokens) {
-                Message message = Message.builder()
-                        .setToken(fcmToken.getToken())
-                        .setNotification(notification)
-                        .putData(FCM_CLICK_ACTION, createMessage.getType())
-                        .build();
-                try {
-                    firebaseMessaging.send(message);
-                    log.info("FCM 알림 전송 성공 Title: [{}], Body: [{}], targetUserId: [{}]", createMessage.getTitle(),
-                            createMessage.getBody(), user.getId());
-                    createMessage(createMessage, fcmToken.getToken(), LocalDateTime.now(), true);
-                } catch (FirebaseMessagingException e) {
-                    e.printStackTrace();
-                    log.info("FCM 알림 전송 실패 targetUserId: [{}]", user.getId());
-                }
+            try {
+                sendMessageByTokens(notification, fcmTokens, request.getType());
+                log.info("FCM 알림 전송 성공 Title: [{}], Body: [{}], targetUserId: [{}]", request.getTitle(),
+                        request.getBody(), user.getId());
+                createMessage(request, fcmTokens.get(0).getToken(), LocalDateTime.now(), true);
+            } catch (CustomException e) {
+                createMessage(request, null, LocalDateTime.now(), false);
+                log.info("FCM 알림 전송 실패 targetUserId: [{}]", user.getId());
             }
-        } else {
+        }
+        else {
             log.info("서버에 userId: [{}]인 유저의 FCM 토큰 정보가 존재하지 않아, 알림을 전송할 수 없습니다.", user.getId());
-            createMessage(createMessage, null, LocalDateTime.now(), false);
+            createMessage(request, null, LocalDateTime.now(), false);
         }
     }
 
-    private void createMessage(CreateMessage createMessage, String token, LocalDateTime reqDate, boolean successYn) {
-        log.info("start createMessage by userId: [{}], type: [{}], token: [{}], successYn: [{}]", createMessage.getTargetUserId(), createMessage.getType(), token, successYn);
+    @Async
+    public void sendMessageByTokens(Notification notification, List<FcmToken> fcmTokens, String clickAction) {
+        log.info("start sendMessageByTokens");
+
+        List<Message> messages = fcmTokens.stream()
+                .map(fcmToken -> createMessageByBuilder(fcmToken.getToken(), notification, clickAction))
+                .toList();
+
+        try {
+            BatchResponse batchResponse = sendAndGetResponses(messages);
+            log.info("Sent tokens: [{}]", batchResponse);
+        } catch (Exception e) {
+            log.error("error in sendMessageByTokens : {}", e.getMessage());
+            throw new CustomException(e.getMessage(), CommonCode.FAIL_SEND_FCM);
+        }
+    }
+
+    private void createMessage(CreateMessageRequest createMessageRequest, String token, LocalDateTime reqDate, boolean successYn) {
+        log.info("start createMessage by userId: [{}], type: [{}], token: [{}], successYn: [{}]", createMessageRequest.getTargetUserId(), createMessageRequest.getType(), token, successYn);
 
         fcmMessageRepository.save(
-                new FcmMessage(createMessage.getTargetUserId(), token, reqDate, createMessage.getTitle(),
-                        createMessage.getBody(), createMessage.getType(), successYn, createMessage.getBoard()));
+                new FcmMessage(createMessageRequest.getTargetUserId(), token, reqDate, createMessageRequest.getTitle(),
+                        createMessageRequest.getBody(), createMessageRequest.getType(), successYn, createMessageRequest.getBoard()));
     }
 
     public ReadFcmMessagesResponse readMessages(long userId, int pageSize, Long lastMessageId) {
@@ -96,5 +111,17 @@ public class FcmService {
         }
 
         return new ReadFcmMessagesResponse(fcmMessagePage.getContent());
+    }
+
+    private BatchResponse sendAndGetResponses(List<Message> messages) throws ExecutionException, InterruptedException {
+        return FirebaseMessaging.getInstance().sendAllAsync(messages).get();
+    }
+
+    private Message createMessageByBuilder(String fcmToken, Notification notification, String clickAction) {
+        return Message.builder()
+                .setToken(fcmToken)
+                .setNotification(notification)
+                .putData(FCM_CLICK_ACTION, clickAction)
+                .build();
     }
 }
