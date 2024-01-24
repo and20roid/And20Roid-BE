@@ -2,6 +2,7 @@ package com.and20roid.backend.service;
 
 import static com.and20roid.backend.common.constant.Constant.BOARD_PARTICIPATION_PENDING;
 import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_OPEN;
+import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_PENDING;
 import static com.and20roid.backend.common.constant.Constant.MESSAGE_TYPE_JOIN;
 import static com.and20roid.backend.common.constant.Constant.MESSAGE_TYPE_REQUEST;
 
@@ -59,17 +60,29 @@ public class ParticipationService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
+        // 이미 참여한 유저인 경우 예외처리
         if (participationStatusRepository.existsByBoardIdAndUserId(boardId, user.getId())) {
             throw new CustomException(CommonCode.ALREADY_PARTICIPATE_BOARD);
         }
 
+        // 자신의 테스트에 참여하는 경우 예외처리
         if (board.getUser().getId().equals(user.getId())) {
             throw new CustomException(CommonCode.CANNOT_PARTICIPATE_OWN_BOARD);
         }
 
-        participationStatusRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
+        // 모집자 수를 다 채운 경우 예외처리
+        if (board.getParticipantNum() >= board.getRecruitmentNum()) {
+            throw new CustomException(CommonCode.OVER_CAPACITY);
+        }
 
+        participationStatusRepository.save(new ParticipationStatus(user, board, BOARD_PARTICIPATION_PENDING, email));
         board.addParticipantNum();
+
+        // 참여자 수 == 모집자 수인 경우 모집 마감으로 상태 변경
+        if (board.getParticipantNum() == board.getRecruitmentNum()) {
+            board.updateStatus(BOARD_STATE_PENDING);
+        }
+
         boardRepository.save(board);
 
         fcmService.sendMessageByToken(new CreateMessage(board.getUser().getId(),
