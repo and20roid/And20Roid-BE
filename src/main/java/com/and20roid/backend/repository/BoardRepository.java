@@ -20,6 +20,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findByUserId(Long userId, PageRequest pageRequest);
 
+    List<Board> findAllByUserId(Long userId);
+
     Page<Board> findByIdIn(List<Long> boardIdList, PageRequest pageRequest);
 
     Page<Board> findByIdLessThanAndIdIn(Long lastBoardId, List<Long> boardIdList, PageRequest pageRequest);
@@ -33,7 +35,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 //            + "limit :pageSize ", nativeQuery = true)
 //    List<ReadBoardQuery> findReadBoardsResponse(Long userId, Long lastBoardId, int pageSize);
 
-    @Query(value = "with board_with_introduction_image as (select b.id, GROUP_CONCAT(a.url) as urls from app_introduction_image a inner join board b on a.board_id = b.id group by b.id), "
+    @Query(value = "with board_with_introduction_image as (select b.id, GROUP_CONCAT(a.url) as urls from app_introduction_image a inner join board b on a.board_id = b.id where b.is_deleted is false group by b.id), "
             + "board_with_user as (select b.*, nickname from board b inner join user u on b.user_id = u.id), "
             + "like_board_calc as (select * from board_like_status where user_id = :userId), "
             + "board_with_user_like_board_calc as (select b.*, if(l.id IS NOT NULL, 1, 0) as is_liked_board from board_with_user b left join like_board_calc l on b.id = l.board_id)"

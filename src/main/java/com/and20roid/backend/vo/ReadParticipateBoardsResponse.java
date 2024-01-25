@@ -30,6 +30,7 @@ public class ReadParticipateBoardsResponse {
         private String thumbnailUrl;   // 썸네일 URL
         private String createdDate;     // 생성일
         private String introLine;       // 한줄소개
+        private boolean isDeleted;      // 삭제여부
 
         public ReadParticipateBoardResponse(Board board) {
             this.id = board.getId();
@@ -40,6 +41,7 @@ public class ReadParticipateBoardsResponse {
             this.thumbnailUrl = board.getThumbnailUrl();
             this.createdDate = board.getCreatedDate().toString();
             this.introLine = board.getIntroLine();
+            this.isDeleted = board.isDeleted();
         }
     }
 }

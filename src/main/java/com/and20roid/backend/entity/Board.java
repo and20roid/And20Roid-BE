@@ -2,6 +2,7 @@ package com.and20roid.backend.entity;
 
 import com.and20roid.backend.common.constant.Constant;
 import com.and20roid.backend.vo.CreateBoardRequest;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -35,6 +36,9 @@ public class Board extends BaseTimeEntity {
     private Long views;             // 조회수
     private Long likes;             // 좋아요 개수
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean isDeleted;      // 삭제 여부
+
     @Nullable
     private LocalDateTime startTime;    // 테스트 시작 시간
 
@@ -64,6 +68,7 @@ public class Board extends BaseTimeEntity {
         this.startTime = null;
         this.fcmSentByScheduler = null;
         this.endTime = null;
+        this.isDeleted = false;
     }
 
     public Board addViews() {
@@ -73,6 +78,11 @@ public class Board extends BaseTimeEntity {
 
     public Board addParticipantNum() {
         this.participantNum += 1;
+        return this;
+    }
+
+    public Board subtractParticipantNum() {
+        this.participantNum -= 1;
         return this;
     }
 
@@ -103,6 +113,12 @@ public class Board extends BaseTimeEntity {
 
     public Board updateEndTime() {
         this.endTime = LocalDateTime.now();
+        return this;
+    }
+
+    public Board withdrawalUser() {
+        this.user = null;
+        this.isDeleted = true;
         return this;
     }
 }

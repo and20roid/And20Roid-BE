@@ -100,4 +100,17 @@ public class UserController {
 
         return new ResponseEntity<>("유저 업데이트 성공", HttpStatus.OK);
     }
+
+    /**
+     * 회원 탈퇴
+     */
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteUser() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        userService.deleteUser(userId);
+
+        return new ResponseEntity<>("회원 탈퇴 성공", HttpStatus.OK);
+    }
 }
