@@ -30,4 +30,10 @@ public class UserInteractionStatus extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
+
+    public UserInteractionStatus(User uploader, User tester, Board board) {
+        this.uploader = uploader;
+        this.tester = tester;
+        this.board = board;
+    }
 }

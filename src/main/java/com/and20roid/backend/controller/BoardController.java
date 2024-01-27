@@ -98,7 +98,7 @@ public class BoardController {
     }
 
     /**
-     * 테스트 종료
+     * 테스트 종료 (스케줄러가 수행하게 되어 사용하지 않음)
      */
     @PostMapping("/{boardId}/end")
     public ResponseEntity<String> endTest(@PathVariable Long boardId) {
