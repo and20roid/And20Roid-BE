@@ -81,25 +81,16 @@ public class BoardService {
 
     public ReadBoardsResponse readBoards(Long lastBoardId, int pageSize, Long userId) {
         log.info("start readBoards by lastBoardId: [{}], userId: [{}]", lastBoardId, userId);
-//        Sort sort = Sort.by(Sort.Direction.DESC, "id");
-//        PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
-//
-//        Page<Board> page = null;
-//
-//        if (lastBoardId == null || lastBoardId < 1) {
-//            page = boardRepository.findAll(pageRequest);
-//        } else {
-//            page = boardRepository.findByIdLessThan(lastBoardId, pageRequest);
-//        }
+
+        List<ReadBoardQuery> readBoardsResponse;
 
         if (lastBoardId == null || lastBoardId < 1) {
-            lastBoardId = (long) pageSize + 1;
+            readBoardsResponse = boardRepository.findReadBoardsResponse(userId, pageSize);
+        } else {
+            readBoardsResponse = boardRepository.findReadBoardsResponse(userId, lastBoardId, pageSize);
         }
 
-        List<ReadBoardQuery> readBoardsResponse = boardRepository.findReadBoardsResponse(userId, lastBoardId, pageSize);
-
         return new ReadBoardsResponse(readBoardsResponse);
-
     }
 
     public ReadBoardInfoResponse readBoard(Long boardId, Long userId) {

@@ -45,6 +45,15 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             + "limit :pageSize ", nativeQuery = true)
     List<ReadBoardQuery> findReadBoardsResponse(Long userId, Long lastBoardId, int pageSize);
 
+    @Query(value = "with board_with_introduction_image as (select b.id, GROUP_CONCAT(a.url) as urls from app_introduction_image a inner join board b on a.board_id = b.id where b.is_deleted is false group by b.id), "
+            + "board_with_user as (select b.*, nickname from board b inner join user u on b.user_id = u.id), "
+            + "like_board_calc as (select * from board_like_status where user_id = :userId), "
+            + "board_with_user_like_board_calc as (select b.*, if(l.id IS NOT NULL, 1, 0) as is_liked_board from board_with_user b left join like_board_calc l on b.id = l.board_id)"
+            + "select b.id as id, title, urls as imageUrls, participant_num as participantNum, recruitment_num as recruitmentNum, created_date as createdDate, state, thumbnail_url as thumbnailUrl, views, likes, is_liked_board as isLikedBoard, nickname, intro_line as introLine from board_with_introduction_image b inner join board_with_user_like_board_calc l on b.id = l.id "
+            + "order by b.id desc "
+            + "limit :pageSize ", nativeQuery = true)
+    List<ReadBoardQuery> findReadBoardsResponse(Long userId, int pageSize);
+
     @Query(value = "with board_with_introduction_image as (select b.id, GROUP_CONCAT(a.url) as urls from app_introduction_image a inner join board b on a.board_id = b.id group by b.id), "
             + "board_with_user as (select b.*, nickname from board b inner join user u on b.user_id = u.id), "
             + "like_board_calc as (select * from board_like_status where user_id = :userId), "
@@ -61,6 +70,14 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
             + "order by ub.id desc "
             + "limit :pageSize", nativeQuery = true)
     List<ReadBoardWithInviteInfoQuery> findBoardsWithInviteInfoByUserId(Long invitedUserId, Long userId, Long lastBoardId, int pageSize);
+
+    @Query(value = "with uploader_board as (select b.* from board b inner join user u on b.user_id = u.id where u.id = :userId), "
+            + "invite_history as (select * from participation_invite_status where user_id = :invitedUserId) "
+            + "select ub.id as id, title, participant_num as participantNum, recruitment_num as recruitmentNum, ub.created_date as createdDate, state, thumbnail_url as thumbnailUrl, intro_line as introLine, if(i.user_id is null, 0, 1) as isAlreadyInvited "
+            + "from uploader_board ub left join invite_history i on ub.id = i.board_id "
+            + "order by ub.id desc "
+            + "limit :pageSize", nativeQuery = true)
+    List<ReadBoardWithInviteInfoQuery> findBoardsWithInviteInfoByUserId(Long invitedUserId, Long userId, int pageSize);
 
     List<Board> findAllByStateAndStartTimeIsBeforeAndFcmSentBySchedulerIsFalse(String state, LocalDateTime twoWeeksAgoFromNow);
 

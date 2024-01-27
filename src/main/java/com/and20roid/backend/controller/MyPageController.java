@@ -22,6 +22,9 @@ public class MyPageController {
 
     private final MyPageService myPageService;
 
+    /**
+     * 업로드한 모집글 조회
+     */
     @GetMapping("/boards/upload")
     public ResponseEntity<ReadUploadBoardsResponse> readUploadBoards(@RequestParam Long lastBoardId) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -31,6 +34,9 @@ public class MyPageController {
                 HttpStatus.OK);
     }
 
+    /**
+     * 참여한 모집글 조회
+     */
     @GetMapping("/boards/participation")
     public ResponseEntity<ReadParticipateBoardsResponse> readParticipateBoards(@RequestParam Long lastBoardId) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

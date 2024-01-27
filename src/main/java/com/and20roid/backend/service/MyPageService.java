@@ -8,6 +8,7 @@ import com.and20roid.backend.vo.ReadParticipateBoardsResponse;
 import com.and20roid.backend.vo.ReadUploadBoardsResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -15,12 +16,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MyPageService {
 
     private final BoardRepository boardRepository;
     private final ParticipationStatusRepository participationStatusRepository;
 
     public ReadUploadBoardsResponse readUploadBoards(Long lastBoardId, int pageSize, long userId) {
+        log.info("start readUploadBoards by lastBoardId: [{}], userId: [{}]", lastBoardId, userId);
+
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
 
@@ -37,6 +41,8 @@ public class MyPageService {
     }
 
     public ReadParticipateBoardsResponse readParticipateBoards(Long lastBoardId, int pageSize, long userId) {
+        log.info("start readParticipateBoards by lastBoardId: [{}], userId: [{}]", lastBoardId, userId);
+
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
 

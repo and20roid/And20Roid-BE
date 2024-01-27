@@ -91,6 +91,9 @@ public class UserController {
         return new ResponseEntity<>(fcmService.readMessages(userId, DEFAULT_ONE_PAGE_SIZE, lastMessageId), HttpStatus.OK);
     }
 
+    /**
+     * 닉네임 변경
+     */
     @PutMapping("")
     public ResponseEntity<String> updateUser(@RequestBody UpdateUserRequest request) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

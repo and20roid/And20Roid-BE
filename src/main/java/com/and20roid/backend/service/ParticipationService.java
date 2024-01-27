@@ -121,12 +121,13 @@ public class ParticipationService {
     public ReadBoardWithInviteInfosResponse readBoardWithInviteInfos(Long invitedUserId, long userId, Long lastBoardId, int pageSize) {
         log.info("start readBoardWithInviteInfos by invitedUserId: [{}], userId: [{}]", invitedUserId, userId);
 
-        if (lastBoardId == null || lastBoardId < 1) {
-            lastBoardId = (long) pageSize + 1;
-        }
+        List<ReadBoardWithInviteInfoQuery> readBoardWithInviteInfoQueries;
 
-        List<ReadBoardWithInviteInfoQuery> readBoardWithInviteInfoQueries = boardRepository.findBoardsWithInviteInfoByUserId(
-                invitedUserId, userId, lastBoardId, pageSize);
+        if (lastBoardId == null || lastBoardId < 1) {
+            readBoardWithInviteInfoQueries = boardRepository.findBoardsWithInviteInfoByUserId(invitedUserId, userId, pageSize);
+        } else {
+            readBoardWithInviteInfoQueries = boardRepository.findBoardsWithInviteInfoByUserId(invitedUserId, userId, lastBoardId, pageSize);
+        }
 
         return new ReadBoardWithInviteInfosResponse(readBoardWithInviteInfoQueries);
     }
