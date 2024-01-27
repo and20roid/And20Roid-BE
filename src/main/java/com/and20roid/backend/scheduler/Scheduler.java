@@ -25,7 +25,7 @@ public class Scheduler {
     private final FcmService fcmService;
     private final MessageSource messageSource;
 
-    @Scheduled(cron = "* * 12 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void sendFcmAboutTerminated() {
         log.info("start sendFcmAboutTerminated by scheduler");
         LocalDateTime twoWeeksAgoFromNow = LocalDateTime.now().minusDays(14);
