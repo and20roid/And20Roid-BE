@@ -36,6 +36,7 @@ public class ReadBoardsResponse {
         private Long views;             // 조회수
         private Long likes;             // 좋아요수
         private boolean isLikedBoard;   // 좋아요 여부
+        private boolean isMine;         // 지신이 올린 모집글 여부
 
         public ReadBoardResponse(ReadBoardQuery readBoardQuery) {
             String imageUrlConcat = readBoardQuery.getImageUrls();
@@ -58,6 +59,7 @@ public class ReadBoardsResponse {
             this.views = readBoardQuery.getViews();
             this.likes = readBoardQuery.getLikes();
             this.isLikedBoard = (readBoardQuery.getIsLikedBoard() == 1);
+            this.isMine = (readBoardQuery.getIsMine() == 1);
         }
     }
 }

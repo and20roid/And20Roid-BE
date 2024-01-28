@@ -16,4 +16,5 @@ public interface ReadBoardQuery {
     Long getViews();
     Long getLikes();
     int getIsLikedBoard();
+    int getIsMine();
 }
