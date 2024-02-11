@@ -15,6 +15,11 @@ public interface UserInteractionStatusRepository extends JpaRepository<UserInter
             + "group by u.uploader.id")
     List<ReadUserInteractionCountQuery> readUserInteractionAsTesterCount(@Param("userId") Long userId, @Param("userIdList") List<Long> userIdList);
 
+    @Query("SELECT count(*) FROM UserInteractionStatus u "
+            + "WHERE (u.uploader.id = :myUserId AND u.tester.id = :anotherUserId) "
+            + "OR (u.tester.id = :myUserId AND u.uploader.id = :anotherUserId)")
+    long countUserInteractionStatusByUserId(@Param("myUserId") Long myUserId, @Param("anotherUserId") Long anotherUserId);
+
     @Query("SELECT u.tester.id as id, count(*) as count FROM UserInteractionStatus u " +
             "WHERE (u.uploader.id = :userId AND u.tester.id IN :userIdList)"
             + "group by u.tester.id")

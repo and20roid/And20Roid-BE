@@ -1,6 +1,8 @@
 package com.and20roid.backend.controller;
 
 import static com.and20roid.backend.common.constant.Constant.DEFAULT_ONE_PAGE_SIZE;
+import static com.and20roid.backend.service.UserService.USER_INFO_REQUEST_TYPE_ANOTHER;
+import static com.and20roid.backend.service.UserService.USER_INFO_REQUEST_TYPE_MY;
 
 import com.and20roid.backend.service.FcmService;
 import com.and20roid.backend.service.UserService;
@@ -48,12 +50,14 @@ public class UserController {
     @GetMapping("")
     public ResponseEntity<ReadUserTestingStats> readUserTestingStats(@Nullable @RequestParam Long userId) {
 
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Long myUserId = Long.parseLong(userDetails.getUsername());
+
         if (userId == null) {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            userId = Long.parseLong(userDetails.getUsername());
+            return new ResponseEntity<>(userService.readUserTestingStats(myUserId, myUserId, USER_INFO_REQUEST_TYPE_MY), HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(userService.readUserTestingStats(userId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.readUserTestingStats(userId, myUserId, USER_INFO_REQUEST_TYPE_ANOTHER), HttpStatus.OK);
     }
 
     /**

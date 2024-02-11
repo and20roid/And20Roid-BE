@@ -28,7 +28,6 @@ import com.and20roid.backend.vo.ReadUserTestingStats;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,6 +43,8 @@ public class UserService {
     private final AppIntroductionImageRepository appIntroductionImageRepository;
 
     private static final String ROLE_USER = "ROLE_USER";
+    public static final String USER_INFO_REQUEST_TYPE_MY = "MY_INFO";
+    public static final String USER_INFO_REQUEST_TYPE_ANOTHER = "ANOTHER_USER_INFO";
 
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
@@ -70,8 +71,8 @@ public class UserService {
         return "성공";
     }
 
-    public ReadUserTestingStats readUserTestingStats(Long userId) {
-        log.info("start readUserTestingStats by userId[{}]", userId);
+    public ReadUserTestingStats readUserTestingStats(Long userId, Long myUserId, String type) {
+        log.info("start readUserTestingStats by userId: [{}], myUserId: [{}], type: [{}]", userId, myUserId, type);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
@@ -88,7 +89,13 @@ public class UserService {
             rank = readRankQuery.getRank();
         }
 
-        return new ReadUserTestingStats(completedTestCount, uploadBoardCount, rank, nickname);
+        // 다른 유저 정보의 경우에는 서로 도움 횟수까지 Response
+        if (type.equals(USER_INFO_REQUEST_TYPE_ANOTHER)) {
+            long interactionCounts = userInteractionStatusRepository.countUserInteractionStatusByUserId(myUserId, userId);
+            return new ReadUserTestingStats(completedTestCount, uploadBoardCount, rank, nickname, interactionCounts);
+        }
+
+        return new ReadUserTestingStats(completedTestCount, uploadBoardCount, rank, nickname, null);
     }
 
     public void createFcmToken(String token, long userId) {

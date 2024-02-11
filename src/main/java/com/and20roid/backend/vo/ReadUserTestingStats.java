@@ -12,4 +12,5 @@ public class ReadUserTestingStats {
     private int uploadBoardCount;
     private Integer rank;
     private String nickname;
+    private Long interactionCounts;
 }
