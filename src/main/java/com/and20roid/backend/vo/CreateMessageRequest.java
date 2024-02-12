@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 public class CreateMessageRequest {
 
     private long targetUserId;
+
+    @Nullable
+    private Long senderUserId;
+
     private String title;
     private String body;
     private String type;

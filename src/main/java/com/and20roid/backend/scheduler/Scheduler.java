@@ -6,8 +6,6 @@ import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_PROCEED
 import static com.and20roid.backend.common.constant.Constant.MESSAGE_TYPE_END_TESTER;
 import static com.and20roid.backend.common.constant.Constant.MESSAGE_TYPE_END_UPLOADER;
 
-import com.and20roid.backend.common.exception.CustomException;
-import com.and20roid.backend.common.response.CommonCode;
 import com.and20roid.backend.entity.Board;
 import com.and20roid.backend.entity.ParticipationStatus;
 import com.and20roid.backend.entity.UserInteractionStatus;
@@ -72,7 +70,7 @@ public class Scheduler {
                     // fcm 전송 (for tester)
                     participationStatuses.stream()
                             .map(ParticipationStatus::getUser)
-                            .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(),
+                            .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(), null,
                                             messageSource.getMessage("TITLE_005", null, Locale.getDefault()),
                                             messageSource.getMessage("CONTENT_005", new String[]{board.getTitle()}, Locale.getDefault()),
                                             MESSAGE_TYPE_END_TESTER,
@@ -82,7 +80,7 @@ public class Scheduler {
                 }
 
                 // fcm 전송 (for uploader)
-                fcmService.sendMessage(new CreateMessageRequest(board.getUser().getId(),
+                fcmService.sendMessage(new CreateMessageRequest(board.getUser().getId(), null,
                         messageSource.getMessage("TITLE_004", null, Locale.getDefault()),
                         messageSource.getMessage("CONTENT_004", new String[]{board.getTitle()}, Locale.getDefault()),
                         MESSAGE_TYPE_END_UPLOADER,

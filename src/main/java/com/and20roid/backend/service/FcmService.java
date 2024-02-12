@@ -12,13 +12,11 @@ import com.and20roid.backend.vo.CreateMessageRequest;
 import com.and20roid.backend.vo.ReadFcmMessagesResponse;
 import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -92,7 +90,7 @@ public class FcmService {
         log.info("start createMessage by userId: [{}], type: [{}], token: [{}], successYn: [{}]", createMessageRequest.getTargetUserId(), createMessageRequest.getType(), token, successYn);
 
         fcmMessageRepository.save(
-                new FcmMessage(createMessageRequest.getTargetUserId(), token, reqDate, createMessageRequest.getTitle(),
+                new FcmMessage(createMessageRequest.getTargetUserId(), createMessageRequest.getSenderUserId(), token, reqDate, createMessageRequest.getTitle(),
                         createMessageRequest.getBody(), createMessageRequest.getType(), successYn, createMessageRequest.getBoard()));
     }
 

@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import javax.annotation.Nullable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,10 @@ public class FcmMessage extends BaseTimeEntity {
     private Long id;
 
     private long userId; // targetUserId
+
+    @Nullable
+    private Long senderUserId; // 보내는 유저 id
+
     private String token; // fcm
     private LocalDateTime reqDate; // 전송일시
     private String title;
@@ -32,9 +37,11 @@ public class FcmMessage extends BaseTimeEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    public FcmMessage(long userId, String token, LocalDateTime reqDate, String title, String content, String type,
-                      boolean successYn, Board board) {
+    public FcmMessage(long userId, @Nullable Long senderUserId, String token, LocalDateTime reqDate,
+                      String title,
+                      String content, String type, boolean successYn, Board board) {
         this.userId = userId;
+        this.senderUserId = senderUserId;
         this.token = token;
         this.reqDate = reqDate;
         this.title = title;

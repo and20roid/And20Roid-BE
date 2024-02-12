@@ -85,7 +85,7 @@ public class ParticipationService {
 
         boardRepository.save(board);
 
-        fcmService.sendMessage(new CreateMessageRequest(board.getUser().getId(),
+        fcmService.sendMessage(new CreateMessageRequest(board.getUser().getId(), user.getId(),
                 messageSource.getMessage("TITLE_002", null, Locale.getDefault()),
                 messageSource.getMessage("CONTENT_002", new String[]{user.getNickname()}, Locale.getDefault()),
                 MESSAGE_TYPE_JOIN,
@@ -159,7 +159,7 @@ public class ParticipationService {
             throw new CustomException(CommonCode.ALREADY_INVITED_USER);
         }
 
-        fcmService.sendMessage(new CreateMessageRequest(invitedUserId,
+        fcmService.sendMessage(new CreateMessageRequest(invitedUserId, userId,
                 messageSource.getMessage("TITLE_001", null, Locale.getDefault()),
                 messageSource.getMessage("CONTENT_001", new String[]{user.getNickname()}, Locale.getDefault()),
                 MESSAGE_TYPE_REQUEST,

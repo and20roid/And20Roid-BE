@@ -3,6 +3,7 @@ package com.and20roid.backend.vo;
 import com.and20roid.backend.entity.FcmMessage;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,6 +23,8 @@ public class ReadFcmMessagesResponse {
     @NoArgsConstructor
     static class ReadFcmMessageResponse {
         private long id;
+        @Nullable
+        private Long senderUserId;
         private String title;
         private String content;
         private String reqDate;
@@ -36,6 +39,7 @@ public class ReadFcmMessagesResponse {
 
         public ReadFcmMessageResponse(FcmMessage fcmMessage) {
             this.id = fcmMessage.getId();
+            this.senderUserId = fcmMessage.getSenderUserId();
             this.title = fcmMessage.getTitle();
             this.content = fcmMessage.getContent();
             this.reqDate = fcmMessage.getReqDate().toString();

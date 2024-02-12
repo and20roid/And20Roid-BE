@@ -163,7 +163,7 @@ public class BoardService {
         // fcm 전송
         participationStatuses.stream()
                 .map(ParticipationStatus::getUser)
-                .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(),
+                .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(), null,
                                 messageSource.getMessage("TITLE_003", null, Locale.getDefault()),
                                 messageSource.getMessage("CONTENT_003", new String[]{board.getTitle()}, Locale.getDefault()),
                                 MESSAGE_TYPE_START,
@@ -205,7 +205,7 @@ public class BoardService {
         // fcm 전송
         participationStatuses.stream()
                 .map(ParticipationStatus::getUser)
-                .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(),
+                .forEach(user -> fcmService.sendMessage(new CreateMessageRequest(user.getId(), null,
                                 messageSource.getMessage("TITLE_005", null, Locale.getDefault()),
                                 messageSource.getMessage("CONTENT_005", new String[]{board.getTitle()}, Locale.getDefault()),
                                 MESSAGE_TYPE_END_TESTER,
