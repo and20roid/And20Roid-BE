@@ -32,8 +32,11 @@ import com.and20roid.backend.vo.ReadBoardsResponse;
 import com.and20roid.backend.vo.UpdateBoardRequest;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -242,17 +245,33 @@ public class BoardService {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
-        List<AppIntroductionImage> appIntroductionImages = appIntroductionImageRepository.findAllByBoard(board);
-
         // 작성자가 아닌 경우 예외처리
         if (board.getUser().getId() != userId) {
             throw new CustomException(CommonCode.FORBIDDEN_BOARD);
         }
 
+        List<AppIntroductionImage> appIntroductionImages = appIntroductionImageRepository.findAllByBoard(board);
+
+        Set<String> imageUrlSet = appIntroductionImages.stream()
+                .map(AppIntroductionImage::getUrl)
+                .collect(Collectors.toSet());
+
+        Set<String> deleteImageUrls = new HashSet<>(request.getDeleteImageUrls());
+
+        // 삭제하고자 하는 image url이 존재하지 않는 경우 예외처리
+        for (String deleteImageUrl : deleteImageUrls) {
+            if (!imageUrlSet.contains(deleteImageUrl)) {
+                throw new CustomException(CommonCode.NONEXISTENT_BOARD_IMAGE);
+            }
+        }
+
         // 이미지 3개 넘어가면 예외처리
-        if (appIntroductionImages.size() + multipartFiles.size() > 3) {
+        if (appIntroductionImages.size() + multipartFiles.size() - deleteImageUrls.size() > 3) {
             throw new CustomException(CommonCode.TOO_MANY_IMAGES);
         }
+
+        // 이미지 삭제
+        appIntroductionImageRepository.deleteByBoardIdAndImageUrls(boardId, request.getDeleteImageUrls());
 
         // 썸네일 변경
         if (!thumbnailFile.isEmpty()) {
@@ -263,9 +282,6 @@ public class BoardService {
         board.update(request);
 
         Board updatedBoard = boardRepository.save(board);
-
-        // 이미지 삭제
-        appIntroductionImageRepository.deleteByBoardIdAndImageUrls(boardId, request.getDeleteImageUrls());
 
         // 이미지 추가
         List<String> urls = new ArrayList<>();
