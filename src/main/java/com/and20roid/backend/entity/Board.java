@@ -2,6 +2,7 @@ package com.and20roid.backend.entity;
 
 import com.and20roid.backend.common.constant.Constant;
 import com.and20roid.backend.vo.CreateBoardRequest;
+import com.and20roid.backend.vo.UpdateBoardRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -124,6 +125,25 @@ public class Board extends BaseTimeEntity {
 
     public Board withdrawalUser() {
         this.user = null;
+        this.isDeleted = true;
+        return this;
+    }
+
+    public Board updateThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+        return this;
+    }
+
+    public void update(UpdateBoardRequest request) {
+        this.title = request.getTitle();
+        this.content = request.getContent();
+        this.recruitmentNum = request.getRecruitmentNum();
+        this.introLine = request.getIntroLine();
+        this.appTestLink = request.getAppTestLink();
+        this.webTestLink = request.getWebTestLink();
+    }
+
+    public Board delete() {
         this.isDeleted = true;
         return this;
     }

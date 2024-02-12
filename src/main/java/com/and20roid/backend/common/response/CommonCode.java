@@ -27,6 +27,7 @@ public enum CommonCode {
     FORBIDDEN_BOARD(403, -2003, "접근할 수 없는 게시글입니다."),
     INVALID_BOARD_STATE(400, -2004, "작업을 처리할 수 없는 게시글 상태입니다."),
     OVER_CAPACITY(400, -2005, "정원 초과로 테스트에 참여하실 수 없습니다."),
+    DELETED_BOARD(400, -2006, "삭제된 게시글입니다."),
 
     //-3000: MultipartFile
     WRONG_FILE_FORMAT(400, -3000, "잘못된 형식의 파일입니다."),

@@ -15,4 +15,13 @@ public interface AppIntroductionImageRepository extends JpaRepository<AppIntrodu
     @Modifying
     @Query("delete from AppIntroductionImage a where a.board.user.id = :userId")
     void deleteAllByUserId(@Param("userId") long userId);
+
+    @Modifying
+    @Query("delete from AppIntroductionImage a where a.board.id = :boardId and a.url in :deleteImageUrls")
+    void deleteByBoardIdAndImageUrls(@Param("boardId") Long boardId,
+                                     @Param("deleteImageUrls") List<String> deleteImageUrls);
+
+    @Modifying
+    @Query("delete from AppIntroductionImage a where a.board.id = :boardId")
+    void deleteAllByBoardId(@Param("boardId") long boardId);
 }

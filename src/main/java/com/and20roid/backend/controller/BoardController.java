@@ -6,16 +6,20 @@ import com.and20roid.backend.service.BoardService;
 import com.and20roid.backend.vo.CreateBoardRequest;
 import com.and20roid.backend.vo.ReadBoardInfoResponse;
 import com.and20roid.backend.vo.ReadBoardsResponse;
+import com.and20roid.backend.vo.UpdateBoardRequest;
 import java.util.List;
+import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -56,6 +60,36 @@ public class BoardController {
         long userId = Long.parseLong(userDetails.getUsername());
 
         return new ResponseEntity<>(boardService.readBoards(lastBoardId, DEFAULT_ONE_PAGE_SIZE, userId), HttpStatus.OK);
+    }
+
+    /**
+     * 모집글 수정
+     */
+    @PutMapping("/{boardId}")
+    public ResponseEntity updateBoard(@PathVariable Long boardId,
+                                      @RequestPart(value = "dto") UpdateBoardRequest request,
+                                      @Nullable @RequestPart(value = "thumbnail") MultipartFile thumbnailFile,
+                                      @Nullable @RequestPart(value = "images") List<MultipartFile> multipartFiles)
+            throws FileUploadException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        boardService.updateBoard(boardId, userId, request, thumbnailFile, multipartFiles);
+
+        return ResponseEntity.ok("success");
+    }
+
+    /**
+     * 모집글 삭제
+     */
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity deleteBoard(@PathVariable Long boardId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long userId = Long.parseLong(userDetails.getUsername());
+
+        boardService.deleteBoard(boardId, userId);
+
+        return ResponseEntity.ok("success");
     }
 
     /**

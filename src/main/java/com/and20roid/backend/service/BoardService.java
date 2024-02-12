@@ -19,13 +19,17 @@ import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.AppIntroductionImageRepository;
 import com.and20roid.backend.repository.BoardLikeStatusRepository;
 import com.and20roid.backend.repository.BoardRepository;
+import com.and20roid.backend.repository.FcmMessageRepository;
+import com.and20roid.backend.repository.ParticipationInviteStatusRepository;
 import com.and20roid.backend.repository.ParticipationStatusRepository;
+import com.and20roid.backend.repository.UserInteractionStatusRepository;
 import com.and20roid.backend.repository.UserRepository;
 import com.and20roid.backend.vo.CreateBoardRequest;
 import com.and20roid.backend.vo.CreateMessageRequest;
 import com.and20roid.backend.vo.ReadBoardInfoResponse;
 import com.and20roid.backend.vo.ReadBoardQuery;
 import com.and20roid.backend.vo.ReadBoardsResponse;
+import com.and20roid.backend.vo.UpdateBoardRequest;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +55,7 @@ public class BoardService {
     private final FcmService fcmService;
     private final MessageSource messageSource;
 
+    @Transactional
     public void createBoard(CreateBoardRequest createBoardRequest, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles, long userId)
             throws FileUploadException {
         log.info("start createBoard by userId: [{}], title: [{}]", userId, createBoardRequest.getTitle());
@@ -98,6 +103,10 @@ public class BoardService {
 
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
+
+        if (board.isDeleted()) {
+            throw new CustomException(CommonCode.DELETED_BOARD);
+        }
 
         ReadBoardQuery readBoardQuery = boardRepository.findReadBoardResponse(userId, boardId);
 
@@ -222,6 +231,70 @@ public class BoardService {
         board.updateStatus(BOARD_STATE_END);
         board.updateEndTime();
 
+        boardRepository.save(board);
+    }
+
+    @Transactional
+    public void updateBoard(Long boardId, long userId, UpdateBoardRequest request, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles)
+            throws FileUploadException {
+        log.info("start updateBoard by boardId: [{}], userId: [{}]", boardId, userId);
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
+
+        List<AppIntroductionImage> appIntroductionImages = appIntroductionImageRepository.findAllByBoard(board);
+
+        // 작성자가 아닌 경우 예외처리
+        if (board.getUser().getId() != userId) {
+            throw new CustomException(CommonCode.FORBIDDEN_BOARD);
+        }
+
+        // 이미지 3개 넘어가면 예외처리
+        if (appIntroductionImages.size() + multipartFiles.size() > 3) {
+            throw new CustomException(CommonCode.TOO_MANY_IMAGES);
+        }
+
+        // 썸네일 변경
+        if (!thumbnailFile.isEmpty()) {
+            String updatedThumbnailUrl = awsS3Service.uploadFile(thumbnailFile);
+            board.updateThumbnailUrl(updatedThumbnailUrl);
+        }
+
+        board.update(request);
+
+        Board updatedBoard = boardRepository.save(board);
+
+        // 이미지 삭제
+        appIntroductionImageRepository.deleteByBoardIdAndImageUrls(boardId, request.getDeleteImageUrls());
+
+        // 이미지 추가
+        List<String> urls = new ArrayList<>();
+
+        for (MultipartFile multipartFile : multipartFiles) {
+            urls.add(awsS3Service.uploadFile(multipartFile));
+        }
+
+        List<AppIntroductionImage> collect = urls.stream()
+                .map(url -> new AppIntroductionImage(updatedBoard, url))
+                .toList();
+
+        appIntroductionImageRepository.saveAll(collect);
+    }
+
+    @Transactional
+    public void deleteBoard(Long boardId, long userId) {
+        log.info("start deleteBoard by boardId: [{}], userId: [{}]", boardId, userId);
+
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
+
+        // 작성자가 아닌 경우 예외처리
+        if (board.getUser().getId() != userId) {
+            throw new CustomException(CommonCode.FORBIDDEN_BOARD);
+        }
+
+        appIntroductionImageRepository.deleteAllByBoardId(boardId);
+        board.delete();
         boardRepository.save(board);
     }
 }
