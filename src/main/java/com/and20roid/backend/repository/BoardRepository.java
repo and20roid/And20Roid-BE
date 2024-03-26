@@ -12,8 +12,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
-    Page<Board> findByIdLessThan(Long lastBoardId, PageRequest pageRequest);
-
     int countByUserId(Long userId);
 
     Page<Board> findByIdLessThanAndUserId(Long lastBoardId, Long userId, PageRequest pageRequest);

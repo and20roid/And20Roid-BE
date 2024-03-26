@@ -19,12 +19,12 @@ public class FirebaseConfiguration {
     private String firebaseSdkPath;
 
     @Bean
-    public FirebaseAuth firebaseAuth(FirebaseApp firebaseApp) throws IOException {
+    public FirebaseAuth firebaseAuth() {
         return FirebaseAuth.getInstance(FirebaseApp.getInstance());
     }
 
     @Bean
-    public FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp) throws IOException {
+    public FirebaseMessaging firebaseMessaging(FirebaseApp firebaseApp) {
         return FirebaseMessaging.getInstance(firebaseApp);
     }
 

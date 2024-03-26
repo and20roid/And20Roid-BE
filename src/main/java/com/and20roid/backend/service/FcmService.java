@@ -31,9 +31,7 @@ import org.springframework.stereotype.Service;
 public class FcmService {
 
     public static final String FCM_CLICK_ACTION = "clickAction";
-    public static final String FCM_CLICK_ACTION_JOINTEST = "joinTest";
 
-    private final FirebaseMessaging firebaseMessaging;
     private final UserRepository userRepository;
     private final FcmTokenRepository fcmTokenRepository;
     private final FcmMessageRepository fcmMessageRepository;

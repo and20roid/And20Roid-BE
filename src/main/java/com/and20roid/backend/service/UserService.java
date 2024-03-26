@@ -1,6 +1,5 @@
 package com.and20roid.backend.service;
 
-import static com.and20roid.backend.common.constant.Constant.BOARD_PARTICIPATION_COMPLETED;
 import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_OPEN;
 import static com.and20roid.backend.common.constant.Constant.BOARD_STATE_PENDING;
 
@@ -10,7 +9,6 @@ import com.and20roid.backend.entity.Authority;
 import com.and20roid.backend.entity.Board;
 import com.and20roid.backend.entity.BoardLikeStatus;
 import com.and20roid.backend.entity.FcmToken;
-import com.and20roid.backend.entity.ParticipationInviteStatus;
 import com.and20roid.backend.entity.ParticipationStatus;
 import com.and20roid.backend.entity.User;
 import com.and20roid.backend.repository.AppIntroductionImageRepository;
