@@ -2,7 +2,9 @@ package com.and20roid.backend.controller;
 
 import static com.and20roid.backend.common.constant.Constant.DEFAULT_ONE_PAGE_SIZE;
 
+import com.and20roid.backend.common.auth.AuthUser;
 import com.and20roid.backend.service.ParticipationService;
+import com.and20roid.backend.vo.AuthUserDTO;
 import com.and20roid.backend.vo.CreateParticipateInviteRequest;
 import com.and20roid.backend.vo.CreateParticipationRequest;
 import com.and20roid.backend.vo.ReadBoardWithInviteInfosResponse;
@@ -12,8 +14,6 @@ import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,12 +33,9 @@ public class ParticipationController {
      * 모집글 참여
      */
     @PostMapping("")
-    public ResponseEntity<String> createParticipation(@RequestBody CreateParticipationRequest request) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long userId = Long.parseLong(userDetails.getUsername());
-
-        participationService.createParticipation(request.getBoardId(), request.getEmail(), userId);
-
+    public ResponseEntity<String> createParticipation(@AuthUser AuthUserDTO authUserDTO,
+                                                      @RequestBody CreateParticipationRequest request) {
+        participationService.createParticipation(request.getBoardId(), request.getEmail(), authUserDTO.getUserId());
         return new ResponseEntity<>("성공", HttpStatus.OK);
     }
 
@@ -46,36 +43,30 @@ public class ParticipationController {
      * 랭킹 조회
      */
     @GetMapping("/ranking")
-    public ResponseEntity<ReadRankingResponse> readParticipation() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long userId = Long.parseLong(userDetails.getUsername());
-
-        return new ResponseEntity<>(participationService.readRanking(userId), HttpStatus.OK);
+    public ResponseEntity<ReadRankingResponse> readParticipation(@AuthUser AuthUserDTO authUserDTO) {
+        return new ResponseEntity<>(participationService.readRanking(authUserDTO.getUserId()), HttpStatus.OK);
     }
 
     /**
      * 테스트 참여 요청 모집글 리스트 조회
      */
     @GetMapping("/invite/{userId}")
-    public ResponseEntity<ReadBoardWithInviteInfosResponse> readBoardWithInviteInfos(@PathVariable(name = "userId") Long invitedUserId,
+    public ResponseEntity<ReadBoardWithInviteInfosResponse> readBoardWithInviteInfos(@AuthUser AuthUserDTO authUserDTO,
+                                                                                     @PathVariable(name = "userId") Long invitedUserId,
                                                                                      @Nullable @RequestParam Long lastBoardId) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long userId = Long.parseLong(userDetails.getUsername());
-
-        return new ResponseEntity<>(participationService.readBoardWithInviteInfos(invitedUserId, userId, lastBoardId, DEFAULT_ONE_PAGE_SIZE), HttpStatus.OK);
+        return new ResponseEntity<>(
+                participationService.readBoardWithInviteInfos(invitedUserId, authUserDTO.getUserId(), lastBoardId,
+                        DEFAULT_ONE_PAGE_SIZE), HttpStatus.OK);
     }
 
     /**
      * 테스트 참여 요청
      */
     @PostMapping("/invite/{userId}")
-    public ResponseEntity<String> createParticipateInvite(@PathVariable(name = "userId") Long invitedUserId,
+    public ResponseEntity<String> createParticipateInvite(@AuthUser AuthUserDTO authUserDTO,
+                                                          @PathVariable(name = "userId") Long invitedUserId,
                                                           @RequestBody CreateParticipateInviteRequest request) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long userId = Long.parseLong(userDetails.getUsername());
-
-        participationService.createParticipateInvite(request.getBoardId(), userId, invitedUserId);
-
+        participationService.createParticipateInvite(request.getBoardId(), authUserDTO.getUserId(), invitedUserId);
         return new ResponseEntity<>("성공", HttpStatus.OK);
     }
 
