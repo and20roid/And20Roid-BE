@@ -35,7 +35,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class BoardService {
 
     private final BoardRepository boardRepository;
@@ -58,8 +56,6 @@ public class BoardService {
     @Transactional
     public void createBoard(CreateBoardRequest createBoardRequest, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles, long userId)
             throws FileUploadException {
-        log.info("start createBoard by userId: [{}], title: [{}]", userId, createBoardRequest.getTitle());
-
         if (multipartFiles.size() > 3) {
             throw new CustomException(CommonCode.TOO_MANY_IMAGES);
         }
@@ -85,8 +81,6 @@ public class BoardService {
     }
 
     public ReadBoardsResponse readBoards(Long lastBoardId, int pageSize, Long userId) {
-        log.info("start readBoards by lastBoardId: [{}], userId: [{}]", lastBoardId, userId);
-
         List<ReadBoardQuery> readBoardsResponse;
 
         if (lastBoardId == null || lastBoardId < 1) {
@@ -99,8 +93,6 @@ public class BoardService {
     }
 
     public ReadBoardInfoResponse readBoard(Long boardId, Long userId) {
-        log.info("start readBoard by boardId: [{}], userId: [{}]", boardId, userId);
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -110,16 +102,6 @@ public class BoardService {
 
         ReadBoardQuery readBoardQuery = boardRepository.findReadBoardResponse(userId, boardId);
 
-//        List<AppIntroductionImage> appIntroductionImages = appIntroductionImageRepository.findAllByBoard(board);
-//
-//        if (appIntroductionImages == null || appIntroductionImages.isEmpty()) {
-//            throw new CustomException(CommonCode.ZERO_INTRODUCTION_IMAGES);
-//        }
-//
-//        List<String> imageUrls = appIntroductionImages.stream()
-//                .map(AppIntroductionImage::getUrl)
-//                .toList();
-
         Board updatedBoard = boardRepository.save(board.addViews());
 
         return new ReadBoardInfoResponse(updatedBoard, readBoardQuery);
@@ -127,7 +109,6 @@ public class BoardService {
 
     @Transactional
     public String updateBoardLikes(Long boardId, long userId) {
-        log.info("start updateBoardLikes by boardId: [{}], userId: [{}]", boardId, userId);
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -152,8 +133,6 @@ public class BoardService {
     }
 
     public void startTest(Long boardId, long userId) {
-        log.info("start startTest by boardId: [{}], userId: [{}]", boardId, userId);
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -194,8 +173,6 @@ public class BoardService {
     }
 
     public void endTest(Long boardId, long userId) {
-        log.info("start endTest by boardId: [{}], userId: [{}]", boardId, userId);
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -237,8 +214,6 @@ public class BoardService {
     @Transactional
     public void updateBoard(Long boardId, long userId, UpdateBoardRequest request, MultipartFile thumbnailFile, List<MultipartFile> multipartFiles)
             throws FileUploadException {
-        log.info("start updateBoard by boardId: [{}], userId: [{}]", boardId, userId);
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -296,8 +271,6 @@ public class BoardService {
 
     @Transactional
     public void deleteBoard(Long boardId, long userId) {
-        log.info("start deleteBoard by boardId: [{}], userId: [{}]", boardId, userId);
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 

@@ -13,8 +13,6 @@ import com.and20roid.backend.vo.ReadFcmMessagesResponse;
 import com.and20roid.backend.vo.ReadUserTestingStats;
 import com.and20roid.backend.vo.SignupRequest;
 import com.and20roid.backend.vo.UpdateUserRequest;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import javax.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

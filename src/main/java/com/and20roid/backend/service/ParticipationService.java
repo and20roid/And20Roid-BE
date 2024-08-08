@@ -52,8 +52,6 @@ public class ParticipationService {
 
     @Transactional
     public void createParticipation(Long boardId, String email, Long userId) {
-        log.info("start createParticipation by boardId: [{}], userId: [{}]", boardId, userId);
-
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_BOARD));
 
@@ -94,7 +92,6 @@ public class ParticipationService {
     }
 
     public ReadRankingResponse readRanking(long userId) {
-        log.info("start readRanking by userId: [{}]", userId);
         List<ReadRankQuery> readRankQueries = participationStatusRepository.readRank();
 
         List<Long> userIdList = readRankQueries.stream()
@@ -119,8 +116,6 @@ public class ParticipationService {
     }
 
     public ReadBoardWithInviteInfosResponse readBoardWithInviteInfos(Long invitedUserId, long userId, Long lastBoardId, int pageSize) {
-        log.info("start readBoardWithInviteInfos by invitedUserId: [{}], userId: [{}]", invitedUserId, userId);
-
         List<ReadBoardWithInviteInfoQuery> readBoardWithInviteInfoQueries;
 
         if (lastBoardId == null || lastBoardId < 1) {
@@ -133,8 +128,6 @@ public class ParticipationService {
     }
 
     public void createParticipateInvite(Long boardId, Long userId, Long invitedUserId) {
-        log.info("start createParticipation by boardId: [{}], userId: [{}], invitedUserId: [{}]", boardId, userId, invitedUserId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
@@ -169,8 +162,6 @@ public class ParticipationService {
     }
 
     public ReadParticipantsResponse readParticipants(Long boardId) {
-        log.info("start readParticipant by boardId: [{}]", boardId);
-
         List<ParticipationStatus> participationStatuses = participationStatusRepository.findByBoardId(boardId);
 
         return new ReadParticipantsResponse(participationStatuses);

@@ -23,8 +23,6 @@ public class MyPageService {
     private final ParticipationStatusRepository participationStatusRepository;
 
     public ReadUploadBoardsResponse readUploadBoards(Long lastBoardId, int pageSize, long userId) {
-        log.info("start readUploadBoards by lastBoardId: [{}], userId: [{}]", lastBoardId, userId);
-
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
 
@@ -41,15 +39,10 @@ public class MyPageService {
     }
 
     public ReadParticipateBoardsResponse readParticipateBoards(Long lastBoardId, int pageSize, long userId) {
-        log.info("start readParticipateBoards by lastBoardId: [{}], userId: [{}]", lastBoardId, userId);
-
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
 
         Page<Board> page = null;
-
-//        List<ParticipationStatus> participationStatuses = participationRepository.findByUserIdAndStatus(userId,
-//                BOARD_PARTICIPATION_IN_PROGRESS);
 
         List<ParticipationStatus> participationStatuses = participationStatusRepository.findByUserId(userId);
 

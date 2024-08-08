@@ -51,8 +51,6 @@ public class UserService {
     private final FcmTokenRepository fcmTokenRepository;
 
     public String signup(String uid, String nickname) {
-        log.info("start signup by uid[{}], nickname[{}]", uid, nickname);
-
         // 이미 존재하는 유저인 경우 예외처리
         if (userRepository.existsByUid(uid)) {
             throw new CustomException(CommonCode.ALREADY_EXIST_USER);
@@ -70,8 +68,6 @@ public class UserService {
     }
 
     public ReadUserTestingStats readUserTestingStats(Long userId, Long myUserId, String type) {
-        log.info("start readUserTestingStats by userId: [{}], myUserId: [{}], type: [{}]", userId, myUserId, type);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
@@ -97,8 +93,6 @@ public class UserService {
     }
 
     public void createFcmToken(String token, long userId) {
-        log.info("start createFcmToken by token[{}], userId[{}]", token, userId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
@@ -111,14 +105,10 @@ public class UserService {
 
     @Transactional
     public void deleteFcmToken(long userId) {
-        log.info("start deleteFcmToken by userId[{}]", userId);
-
         fcmTokenRepository.deleteAllByUserId(userId);
     }
 
     public void updateUser(String nickname, long userId) {
-        log.info("start updateUser by nickname: [{}], userId: [{}]", nickname, userId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
@@ -133,8 +123,6 @@ public class UserService {
 
     @Transactional
     public void deleteUser(long userId) {
-        log.info("start deleteUser by userId: [{}]", userId);
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 

@@ -37,8 +37,6 @@ public class FcmService {
     private final FcmMessageRepository fcmMessageRepository;
 
     public void sendMessage(CreateMessageRequest request) {
-        log.info("start sendMessage");
-
         User user = userRepository.findById(request.getTargetUserId())
                 .orElseThrow(() -> new CustomException(CommonCode.NONEXISTENT_USER));
 
@@ -69,8 +67,6 @@ public class FcmService {
 
     @Async
     public void sendMessageByTokens(Notification notification, List<FcmToken> fcmTokens, String clickAction) {
-        log.info("start sendMessageByTokens");
-
         List<Message> messages = fcmTokens.stream()
                 .map(fcmToken -> createMessageByBuilder(fcmToken.getToken(), notification, clickAction))
                 .toList();
@@ -85,16 +81,12 @@ public class FcmService {
     }
 
     private void createMessage(CreateMessageRequest createMessageRequest, String token, LocalDateTime reqDate, boolean successYn) {
-        log.info("start createMessage by userId: [{}], type: [{}], token: [{}], successYn: [{}]", createMessageRequest.getTargetUserId(), createMessageRequest.getType(), token, successYn);
-
         fcmMessageRepository.save(
                 new FcmMessage(createMessageRequest.getTargetUserId(), createMessageRequest.getSenderUserId(), token, reqDate, createMessageRequest.getTitle(),
                         createMessageRequest.getBody(), createMessageRequest.getType(), successYn, createMessageRequest.getBoard()));
     }
 
     public ReadFcmMessagesResponse readMessages(long userId, int pageSize, Long lastMessageId) {
-        log.info("start readMessages by userId: [{}]", userId);
-
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         PageRequest pageRequest = PageRequest.of(0, pageSize, sort);
 
